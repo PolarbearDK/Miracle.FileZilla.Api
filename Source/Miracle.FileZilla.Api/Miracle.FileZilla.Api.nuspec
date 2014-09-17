@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+	<metadata>
+		<id>$id$</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
+		<projectUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>$description$</description>
+		<releaseNotes>Correctly handle multiple replys from server.
+    Renamed some classes/enums/properites to better match FileZilla server interface.</releaseNotes>
+		<copyright>Copyright 2014</copyright>
+		<tags>FileZilla server api create user users group groups automated</tags>
+	</metadata>
+</package>
