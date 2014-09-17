@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Miracle.FileZilla.Api
 {
@@ -124,7 +127,7 @@ namespace Miracle.FileZilla.Api
 
 #if DEBUG
         public bool Trace { get; set; }
-        private static void TraceData(string label, IEnumerable<byte> bytes)
+        protected static void TraceData(string label, IEnumerable<byte> bytes)
         {
             var hex = new StringBuilder(48);
             var ascii = new StringBuilder(16);
@@ -132,7 +135,7 @@ namespace Miracle.FileZilla.Api
             const int rowSize = 16;
 
             Debug.Print(label);
-            foreach (var b in bytes)
+            foreach (var b in bytes.Take(1024))
             {
                 hex.AppendFormat("{0:X2} ", b);
                 ascii.Append(b > 31 ? (char)b : '.');
@@ -152,6 +155,8 @@ namespace Miracle.FileZilla.Api
                 while (ascii.Length < 16) ascii.Append(' ');
                 Debug.Print("{0:X4} : {1}{2} {0}", offset, hex, ascii);
             }
+            if (bytes.Count() > 1024)
+                Debug.Print("(More data... {0:X4}({0}))", bytes.Count());
         }
 #endif
     }
