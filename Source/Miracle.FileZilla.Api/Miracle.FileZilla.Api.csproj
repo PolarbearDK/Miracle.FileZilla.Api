@@ -48,12 +48,12 @@
     <Compile Include="Elements\Connection.cs" />
     <Compile Include="Elements\Days.cs" />
     <Compile Include="Elements\Group.cs" />
-    <Compile Include="Elements\Limit.cs" />
+    <Compile Include="Elements\SpeedLimit.cs" />
     <Compile Include="Elements\Authentication.cs" />
-    <Compile Include="Elements\Permission.cs" />
+    <Compile Include="Elements\SharedFolder.cs" />
     <Compile Include="Elements\AccessRights.cs" />
     <Compile Include="Elements\ServerState.cs" />
-    <Compile Include="Elements\SpeedLimit.cs" />
+    <Compile Include="Elements\SpeedLimitRule.cs" />
     <Compile Include="Elements\SpeedLimitType.cs" />
     <Compile Include="Elements\TriState.cs" />
     <Compile Include="Elements\User.cs" />

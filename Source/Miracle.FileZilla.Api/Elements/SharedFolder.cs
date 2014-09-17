@@ -4,9 +4,9 @@ using System.IO;
 namespace Miracle.FileZilla.Api.Elements
 {
     /// <summary>
-    /// Class representing permissions to a directory
+    /// Class representing permissions to a shared folder
     /// </summary>
-    public class Permission : IBinarySerializable
+    public class SharedFolder : IBinarySerializable
     {
         /// <summary>
         /// Directory path
@@ -26,7 +26,7 @@ namespace Miracle.FileZilla.Api.Elements
         /// <summary>
         /// Default constructor (sets defaults as in FileZilla server interface)
         /// </summary>
-        public Permission()
+        public SharedFolder()
         {
             Aliases = new List<string>();    
             AccessRights = AccessRights.FileRead | AccessRights.DirList | AccessRights.DirSubdirs;

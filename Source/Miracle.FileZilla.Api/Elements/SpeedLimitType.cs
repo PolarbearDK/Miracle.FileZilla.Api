@@ -12,7 +12,7 @@ namespace Miracle.FileZilla.Api.Elements
         /// <summary/>
         NoLimit = 1,
         /// <summary/>
-        FixedLimit = 2,
+        ConstantSpeedLimit = 2,
         /// <summary/>
         UseSpeedLimitRules = 3
     }

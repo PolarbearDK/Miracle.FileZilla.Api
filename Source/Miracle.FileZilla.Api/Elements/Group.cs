@@ -49,11 +49,11 @@ namespace Miracle.FileZilla.Api.Elements
         }
         private TriState _enabled;
         /// <summary>
-        /// List of disallowed IP's
+        /// List of disallowed IP's (IP Filter)
         /// </summary>
         public List<string> DisallowedIPs { get; set; }
         /// <summary>
-        /// List of allowed IP's
+        /// List of allowed IP's (IP Filter)
         /// </summary>
         public List<string> AllowedIPs { get; set; }
         /// <summary>
@@ -64,15 +64,15 @@ namespace Miracle.FileZilla.Api.Elements
         /// <summary>
         /// List of permissions
         /// </summary>
-        public List<Permission> Permissions { get; set; }
+        public List<SharedFolder> SharedFolders { get; set; }
         /// <summary>
         /// Download speed limit
         /// </summary>
-        public Limit DownloadSpeedLimit { get; set; }
+        public SpeedLimit DownloadSpeedLimit { get; set; }
         /// <summary>
         /// Upload speed limit
         /// </summary>
-        public Limit UploadSpeedLimit { get; set; }
+        public SpeedLimit UploadSpeedLimit { get; set; }
         /// <summary>
         /// Comment for user/group
         /// </summary>
@@ -91,9 +91,9 @@ namespace Miracle.FileZilla.Api.Elements
             Enabled = TriState.Yes;
             DisallowedIPs = new List<string>();    
             AllowedIPs = new List<string>();    
-            Permissions = new List<Permission>();
-            DownloadSpeedLimit = new Limit(GetType() == typeof(Group));
-            UploadSpeedLimit = new Limit(GetType() == typeof(Group));
+            SharedFolders = new List<SharedFolder>();
+            DownloadSpeedLimit = new SpeedLimit(GetType() == typeof(Group));
+            UploadSpeedLimit = new SpeedLimit(GetType() == typeof(Group));
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace Miracle.FileZilla.Api.Elements
             DisallowedIPs = reader.ReadTextList();
             AllowedIPs = reader.ReadTextList();
             EightPlusThree = reader.ReadBoolean();
-            Permissions = reader.ReadList<Permission>();
-            DownloadSpeedLimit = reader.Read<Limit>();
-            UploadSpeedLimit = reader.Read<Limit>();
+            SharedFolders = reader.ReadList<SharedFolder>();
+            DownloadSpeedLimit = reader.Read<SpeedLimit>();
+            UploadSpeedLimit = reader.Read<SpeedLimit>();
             Comment = reader.ReadText();
             ForceSsl = reader.ReadBoolean();
         }
@@ -132,7 +132,7 @@ namespace Miracle.FileZilla.Api.Elements
             writer.WriteTextList(DisallowedIPs);
             writer.WriteTextList(AllowedIPs);
             writer.Write(EightPlusThree);
-            writer.WriteList(Permissions);
+            writer.WriteList(SharedFolders);
             writer.Write(DownloadSpeedLimit);
             writer.Write(UploadSpeedLimit);
             writer.WriteText(Comment);

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Miracle.FileZilla.Api.Elements;
 
 namespace Miracle.FileZilla.Api
@@ -34,14 +35,12 @@ namespace Miracle.FileZilla.Api
                         case MessageType.ServerState:
                             return data.Read(reader => (ServerState) reader.ReadBigEndianInt16());
                         case MessageType.UserControl:
-                            switch ((UserControl)data[0])
+                            var userControl = (UserControl)data[0];
+                            data = data.Skip(1).ToArray();
+                            switch (userControl)
                             {
                                 case UserControl.GetList:
-                                    return data.Read(reader =>
-                                    {
-                                        reader.Verify((byte)UserControl.GetList);
-                                        return reader.ReadList<Connection>();
-                                    });
+                                    return data.Read(reader => reader.ReadList<Connection>());
                                 case UserControl.ConNop:
                                     break;
                                 case UserControl.Kick:

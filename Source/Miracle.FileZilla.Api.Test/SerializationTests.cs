@@ -59,9 +59,9 @@ namespace Miracle.FileZilla.Api.Test
 
 
         [Test]
-        public void PermissionTest()
+        public void SharedFolderTest()
         {
-            TestSerializationAndDeserialization<Permission>();
+            TestSerializationAndDeserialization<SharedFolder>();
         }
 
         [Test]
@@ -81,15 +81,15 @@ namespace Miracle.FileZilla.Api.Test
         }
 
         [Test]
-        public void LimitTest()
-        {
-            TestSerializationAndDeserialization<Limit>();
-        }
-
-        [Test]
         public void SpeedLimitTest()
         {
             TestSerializationAndDeserialization<SpeedLimit>();
+        }
+
+        [Test]
+        public void SpeedLimitRuleTest()
+        {
+            TestSerializationAndDeserialization<SpeedLimitRule>();
         }
 
         [Test]
