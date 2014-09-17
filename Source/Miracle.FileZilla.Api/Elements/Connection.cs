@@ -26,9 +26,8 @@ namespace Miracle.FileZilla.Api.Elements
         public string UserName { get; set; }
         /// <summary>
         /// Transfer mode
-        /// TODO! Decode this into enum.
         /// </summary>
-        public byte TransferMode { get; set; }
+        public TransferMode TransferMode { get; set; }
         /// <summary>
         /// The physical filename being transfered.
         /// </summary>
@@ -55,16 +54,17 @@ namespace Miracle.FileZilla.Api.Elements
             Ip = reader.ReadText();
             Port = reader.ReadInt32();
             UserName = reader.ReadText();
-            TransferMode = reader.ReadByte();
+            var flags = reader.ReadByte();
+            TransferMode = (TransferMode)(flags & 0x3);
 
-            if (TransferMode != 0)
+            if (flags != 0)
             {
                 PhysicalFile = reader.ReadText();
                 LogicalFile = reader.ReadText();
 
                 // Bit 5 and 6 indicate presence of currentOffset and totalSize.
-                if ((TransferMode & 0x20) != 0) CurrentOffset = reader.ReadInt64();
-                if ((TransferMode & 0x40) != 0) TotalSize = reader.ReadInt64();
+                if ((flags & 0x20) != 0) CurrentOffset = reader.ReadInt64();
+                if ((flags & 0x40) != 0) TotalSize = reader.ReadInt64();
             }
         }
         /// <summary>
@@ -75,5 +75,20 @@ namespace Miracle.FileZilla.Api.Elements
         {
             throw new NotImplementedException();
         }
+    }
+
+    /// <summary>
+    /// Transfer mode enum specifies what a connection is "doing"
+    /// </summary>
+    public enum TransferMode
+    {
+        /// <summary/>
+        NotSet = 0,
+        /// <summary/>
+        List = 1,
+        /// <summary/>
+        Receive = 2,
+        /// <summary/>
+        Send = 3,
     }
 }

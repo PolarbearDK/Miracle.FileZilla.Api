@@ -20,12 +20,14 @@ namespace Miracle.FileZilla.Api.Elements
         public void Deserialize(BinaryReader reader)
         {
             reader.Verify((byte)0);
-            reader.ReadLongLength(r2 =>
-            {
-                _nonce1 = r2.ReadArray(r3 => r3.ReadByte());
-                _nonce2 = r2.ReadArray(r3 => r3.ReadByte());
-                return true;
-            });
+            reader.ReadLength(
+                reader.ReadInt32(),
+                r2 =>
+                {
+                    _nonce1 = r2.ReadArray(r3 => r3.ReadByte());
+                    _nonce2 = r2.ReadArray(r3 => r3.ReadByte());
+                    return true;
+                });
         }
 
         public void Serialize(BinaryWriter writer)

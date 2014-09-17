@@ -36,12 +36,14 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Elements\Error.cs" />
     <Compile Include="FileZillaApi.cs" />
     <Compile Include="AdminSocket.cs" />
     <Compile Include="ApiException.cs" />
     <Compile Include="BinaryExtensions.cs" />
-    <Compile Include="CommandType.cs" />
-    <Compile Include="CommandOrigin.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="MessageType.cs" />
+    <Compile Include="MessageOrigin.cs" />
     <Compile Include="Elements\AccountSettings.cs" />
     <Compile Include="Elements\Connection.cs" />
     <Compile Include="Elements\Days.cs" />

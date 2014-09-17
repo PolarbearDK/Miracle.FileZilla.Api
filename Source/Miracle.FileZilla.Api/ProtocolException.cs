@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
 
@@ -43,6 +44,17 @@ namespace Miracle.FileZilla.Api
         {
         }
 
+
+        internal static ProtocolException Create(MessageOrigin expectedMessageOrigin, MessageType expectedMessageType, Message[] actualMessages)
+        {
+            var message = string.Format("Expected message {0}/{1} actual {2}",
+                expectedMessageOrigin,
+                expectedMessageType,
+                string.Join(",", actualMessages.Select(x => x.MessageOrigin.ToString() + "/" + x.MessageType.ToString()))
+            );
+            return new ProtocolException(message);
+        }
+
         /// <summary>
         /// Create expected/actual exception.
         /// </summary>
@@ -60,6 +72,7 @@ namespace Miracle.FileZilla.Api
                 reader.BaseStream.Position - SizeOf<T>());
             return new ProtocolException(message);
         }
+
 
         /// <summary>
         /// Get size of generic type in bytes

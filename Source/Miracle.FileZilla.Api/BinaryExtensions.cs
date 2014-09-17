@@ -39,6 +39,30 @@ namespace Miracle.FileZilla.Api
             writer.Write((byte)(value & 0xFF));
         }
 
+        public static T Read<T>(this byte[] data) where T : IBinarySerializable, new()
+        {
+            return data.Read(reader =>
+            {
+                var item = new T();
+                item.Deserialize(reader);
+                return item;
+            });
+        }
+
+        public static T Read<T>(this byte[] data, Func<BinaryReader,T> func)
+        {
+            using (var memoryStream = new MemoryStream(data))
+            {
+                using (var reader = new BinaryReader(memoryStream))
+                {
+                    var item = func(reader);
+                    if (memoryStream.Position != data.Length)
+                        throw new ProtocolException("Serialization error. More data available while deserializing type " + typeof(T).Name);
+                    return item;
+                }
+            }
+        }
+
         public static T Read<T>(this BinaryReader reader) where T : IBinarySerializable, new()
         {
             var item = new T();
@@ -189,19 +213,8 @@ namespace Miracle.FileZilla.Api
             }
         }
 
-        public static T ReadShortLength<T>(this BinaryReader reader, Func<BinaryReader, T> action)
+        public static T ReadLength<T>(this BinaryReader reader, int length, Func<BinaryReader, T> action)
         {
-            var length = reader.ReadBigEndianInt16();
-            var pos = reader.BaseStream.Position;
-            T item = action(reader);
-            if (reader.BaseStream.Position - pos != length)
-                throw new ProtocolException(string.Format("Serialization error. Length expected {0} actual {1}", reader.BaseStream.Position - pos, length));
-            return item;
-        }
-
-        public static T ReadLongLength<T>(this BinaryReader reader, Func<BinaryReader, T> action)
-        {
-            var length = reader.ReadInt32();
             var pos = reader.BaseStream.Position;
             T item = action(reader);
             if (reader.BaseStream.Position - pos != length)
@@ -248,18 +261,18 @@ namespace Miracle.FileZilla.Api
                 throw ProtocolException.Create(reader, expected, actual);
         }
 
-        public static void Verify(this BinaryReader reader, CommandOrigin expectedCommandOrigin, CommandType expectedCommandType)
+        public static void Verify(this BinaryReader reader, MessageOrigin expectedMessageOrigin, MessageType expectedMessageType)
         {
-            var expected = (byte)(((int)expectedCommandOrigin) | ((byte)expectedCommandType << 2));
+            var expected = (byte)(((int)expectedMessageOrigin) | ((byte)expectedMessageType << 2));
 
             var actual = reader.ReadByte();
             if (actual != expected)
             {
-                var actualCommandOrigin = (CommandOrigin) (actual & 0x3);
-                var actualCommandId = (CommandType) (actual >> 2);
-                throw new ProtocolException(string.Format("Expected command type/id {0}/{1} actual {2}/{3} at offset {4:x}({4})",
-                    expectedCommandOrigin, expectedCommandType, 
-                    actualCommandOrigin, actualCommandId,
+                var actualMessageOrigin = (MessageOrigin) (actual & 0x3);
+                var actualMessageType = (MessageType) (actual >> 2);
+                throw new ProtocolException(string.Format("Expected message type/id {0}/{1} actual {2}/{3} at offset {4:x}({4})",
+                    expectedMessageOrigin, expectedMessageType, 
+                    actualMessageOrigin, actualMessageType,
                     reader.BaseStream.Position - 1));
             }
         }
