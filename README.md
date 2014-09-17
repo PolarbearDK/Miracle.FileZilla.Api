@@ -72,12 +72,15 @@ using (var fileZillaApi = new FileZillaApi())
     fileZillaApi.SetAccountSettings(accountSettings);
 }
 ```
+####See sample project for further information.
 
 ##Other features
 * Get server state using GetServerState()
 * Get current connections using GetConnections()
 * Kick connection using Kick(connectionId)
 * Ban IP (and kick) using BanIp(connectionId)
+
+
 
 ##Note! 
 * If you handle a lot of users, you will need to increase the size of the input buffer (BufferSize property)
