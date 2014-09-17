@@ -21,7 +21,7 @@ namespace Miracle.FileZilla.Api.Samples
         {
             GetServerState();
             GetConnections();
-            KickFirstConnection();
+            //KickFirstConnection();
             CreateUserAndGroup();
             DeleteUser();
             CreateLotsOfUsersAndGroups();
@@ -112,9 +112,9 @@ namespace Miracle.FileZilla.Api.Samples
                 var group = new Group()
                 {
                     GroupName = GroupName,
-                    Permissions = new List<Permission>()
+                    SharedFolders = new List<SharedFolder>()
                     {
-                        new Permission()
+                        new SharedFolder()
                         {
                             Directory = @"C:\Group\Shared",
                             AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.IsHome
@@ -129,9 +129,9 @@ namespace Miracle.FileZilla.Api.Samples
                     GroupName = GroupName, // Reference to group
                     UserName = UserName,
                     Password = User.HashPassword("test42"),
-                    Permissions = new List<Permission>()
+                    SharedFolders = new List<SharedFolder>()
                     {
-                        new Permission()
+                        new SharedFolder()
                         {
                             Directory = @"C:\Hello\World",
                             AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.IsHome
@@ -199,14 +199,17 @@ namespace Miracle.FileZilla.Api.Samples
                     accountSettings.Users.Count,
                     stopWatch.GetDelta());
 
+                accountSettings.Groups.RemoveAll(x => x.GroupName.StartsWith(GroupName));
+                accountSettings.Users.RemoveAll(x => x.UserName.StartsWith(UserName));
+
                 for (int i = 0; i < MaxGroups; i++)
                 {
                     var group = new Group()
                     {
                         GroupName = GroupName + i,
-                        Permissions = new List<Permission>()
+                        SharedFolders = new List<SharedFolder>()
                         {
-                            new Permission()
+                            new SharedFolder()
                             {
                                 Directory = @"C:\Group" + i + @"\Shared",
                                 AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.IsHome
@@ -214,7 +217,6 @@ namespace Miracle.FileZilla.Api.Samples
                         },
                     };
 
-                    accountSettings.Groups.RemoveAll(x=>x.GroupName == group.GroupName);
                     accountSettings.Groups.Add(group);
                 }
 
@@ -225,16 +227,15 @@ namespace Miracle.FileZilla.Api.Samples
                         GroupName = GroupName + (i%MaxGroups), // Reference to group
                         UserName = UserName + i,
                         Password = User.HashPassword("LonglongPasswordwithnumber" + i),
-                        Permissions = new List<Permission>()
+                        SharedFolders = new List<SharedFolder>()
                         {
-                            new Permission()
+                            new SharedFolder()
                             {
                                 Directory = @"C:\User" + i + @"\Private",
                                 AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.IsHome
                             }
                         },
                     };
-                    accountSettings.Groups.RemoveAll(x => x.GroupName == user.UserName);
                     accountSettings.Users.Add(user);
                 }
 
@@ -287,7 +288,7 @@ namespace Miracle.FileZilla.Api.Samples
                 fileZillaApi.Connect(ServerPassword);
                 while (true)
                 {
-                    Console.WriteLine("Polling");
+                    Console.WriteLine("Getting active connections... (CTRL-C to exit)");
                     var connections = fileZillaApi.GetConnections();
                     foreach (var connection in connections)
                     {
