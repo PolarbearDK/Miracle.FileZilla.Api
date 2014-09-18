@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using Miracle.FileZilla.Api.Elements;
 
@@ -32,6 +33,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void GetServerState()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -47,6 +49,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void GetConnections()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
 
@@ -68,6 +71,7 @@ namespace Miracle.FileZilla.Api.Samples
         /// </summary>
         private static void KickFirstConnection()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
 #if DEBUG
@@ -90,6 +94,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void CreateUserAndGroup()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -153,6 +158,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void DeleteUser()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
 #if DEBUG
@@ -181,6 +187,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void CreateLotsOfUsersAndGroups()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
 #if DEBUG
@@ -251,6 +258,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void DeleteLotsOfUsersAndGroups()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
 #if DEBUG
@@ -280,6 +288,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void GetConnectionsLoop()
         {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
             {
 #if DEBUG

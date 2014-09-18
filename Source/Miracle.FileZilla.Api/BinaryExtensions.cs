@@ -51,15 +51,12 @@ namespace Miracle.FileZilla.Api
 
         public static T Read<T>(this byte[] data, Func<BinaryReader,T> func)
         {
-            using (var memoryStream = new MemoryStream(data))
+            using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                using (var reader = new BinaryReader(memoryStream))
-                {
-                    var item = func(reader);
-                    if (memoryStream.Position != data.Length)
-                        throw new ProtocolException("Serialization error. More data available while deserializing type " + typeof(T).Name);
-                    return item;
-                }
+                var item = func(reader);
+                if (reader.BaseStream.Position != data.Length)
+                    throw new ProtocolException("Serialization error. More data available while deserializing type " + typeof(T).Name);
+                return item;
             }
         }
 
@@ -81,7 +78,12 @@ namespace Miracle.FileZilla.Api
         public static List<T> ReadList<T>(this BinaryReader reader) where T : IBinarySerializable, new()
         {
             int length = reader.ReadBigEndianInt16();
-            return reader.ReadFixedList<T>(length);
+            var list = new List<T>();
+            for (int i = 0; i < length; i++)
+            {
+                list.Add(reader.Read<T>());
+            }
+            return list;
         }
 
         public static T[] ReadArray<T>(this BinaryReader reader, Func<BinaryReader, T> elementReader)
@@ -95,24 +97,12 @@ namespace Miracle.FileZilla.Api
             return list.ToArray();
         }
 
-        public static List<T> ReadFixedList<T>(this BinaryReader reader, int length) where T : IBinarySerializable, new()
-        {
-            var list = new List<T>();
-            for (int i = 0; i < length; i++)
-            {
-                list.Add(reader.Read<T>());
-            }
-            return list;
-        }
-
         public static void WriteList<T>(this BinaryWriter writer, IList<T> list) where T : IBinarySerializable
         {
-            writer.WriteBigEndianInt16((ushort) list.Count);
-            writer.WriteFixedList(list);
-        }
+            if(list.Count > ushort.MaxValue)
+                throw new ApiException(string.Format("Lists of more than {0} elements is not supported by the FileZilla API.", ushort.MaxValue));
 
-        public static void WriteFixedList<T>(this BinaryWriter writer, IList<T> list) where T : IBinarySerializable
-        {
+            writer.WriteBigEndianInt16((ushort)list.Count);
             foreach (var item in list)
             {
                 writer.Write(item);

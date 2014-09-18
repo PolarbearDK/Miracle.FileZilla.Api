@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace Miracle.FileZilla.Api
 {
@@ -39,7 +38,16 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         public void Dispose()
         {
-            Disconnect();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Disconnect();
+            }
         }
 
         /// <summary>
@@ -96,7 +104,7 @@ namespace Miracle.FileZilla.Api
             if (!IsConnected) throw new ApiException("Not connected");
 #if DEBUG
             if (Trace)
-                TraceData(DateTime.Now + " Send:", data);
+                TraceData("Send", data);
 #endif
             _socket.Send(data);
         }
@@ -112,50 +120,23 @@ namespace Miracle.FileZilla.Api
         {
             if (!IsConnected) throw new ApiException("Not connected");
 
-            // Receive the response from the remote device.
             int bytesRec = _socket.Receive(_buffer);
             if(bytesRec == BufferSize)
                 throw new ApiException("Buffer too small. Increase BufferSize parameter");
             var data = _buffer.Take(bytesRec).ToArray();
 #if DEBUG
             if (Trace)
-                TraceData(DateTime.Now + " Receive:", data);
+                TraceData("Receive", data);
 #endif
             return data;
         }
 
 #if DEBUG
         public bool Trace { get; set; }
-        protected static void TraceData(string label, byte[] bytes)
+        protected static void TraceData(string text, byte[] bytes)
         {
-            var hex = new StringBuilder(48);
-            var ascii = new StringBuilder(16);
-            int offset = 0;
-            const int rowSize = 16;
-
-            Debug.Print(label);
-            foreach (var b in bytes.Take(1024))
-            {
-                hex.AppendFormat("{0:X2} ", b);
-                ascii.Append(b > 31 ? (char)b : '.');
-
-                if (ascii.Length == rowSize)
-                {
-                    Debug.Print("{0:X4} : {1}{2} {0}", offset, hex, ascii);
-                    hex.Clear();
-                    ascii.Clear();
-                    offset += rowSize;
-                }
-            }
-
-            if (ascii.Length != 0)
-            {
-                while (hex.Length < 48) hex.Append(' ');
-                while (ascii.Length < 16) ascii.Append(' ');
-                Debug.Print("{0:X4} : {1}{2} {0}", offset, hex, ascii);
-            }
-            if (bytes.Length > 1024)
-                Debug.Print("(More data... {0:X4}({0}))", bytes.Length);
+            Debug.WriteLine("{0}: {1}",DateTime.Now.TimeOfDay, text);
+            Debug.Write(Hex.Dump(bytes, 1024));
         }
 #endif
     }

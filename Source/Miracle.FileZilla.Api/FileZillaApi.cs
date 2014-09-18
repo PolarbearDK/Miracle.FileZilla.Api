@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,7 +7,6 @@ using Miracle.FileZilla.Api.Elements;
 
 namespace Miracle.FileZilla.Api
 {
-
     /// <summary>
     /// FileZilla server API
     /// </summary>
@@ -53,7 +51,7 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="address">IP address of filezilla server.</param>
         /// <param name="port">Admin port as specified when FileZilla server were installed</param>
-        public FileZillaApi(IPAddress address, int port) 
+        public FileZillaApi(IPAddress address, int port)
             : base(address, port)
         {
         }
@@ -70,10 +68,10 @@ namespace Miracle.FileZilla.Api
             Receive(reader =>
             {
                 reader.Verify("FZS");
-                ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(),x => x.ReadInt32());
-                ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(),x => x.ReadInt32());
-                authentication = reader.BaseStream.Length > 15 
-                    ? reader.Read<Authentication>() 
+                ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
+                ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
+                authentication = reader.BaseStream.Length > 15
+                    ? reader.Read<Authentication>()
                     : null;
             });
 
@@ -179,17 +177,15 @@ namespace Miracle.FileZilla.Api
 
         internal void SendCommand(MessageOrigin messageOrigin, MessageType messageType, Action<BinaryWriter> action)
         {
-            using (var stream = new MemoryStream())
+            var stream = new MemoryStream();
+            using (var writer = new BinaryWriter(stream))
             {
-                using (var writer = new BinaryWriter(stream))
-                {
-                    var cmd = (byte)(((int)messageOrigin) | ((byte)messageType << 2));
-                    writer.Write(cmd);
-                    writer.WriteLength(action);
-                }
-
-                Send(stream.ToArray());
+                var cmd = (byte)(((int)messageOrigin) | ((byte)messageType << 2));
+                writer.Write(cmd);
+                writer.WriteLength(action);
             }
+
+            Send(stream.ToArray());
         }
 
         internal void Receive(MessageOrigin messageOrigin, MessageType messageType)
@@ -202,18 +198,15 @@ namespace Miracle.FileZilla.Api
         internal T Receive<T>(MessageOrigin messageOrigin, MessageType messageType)
         {
             var message = ReceiveMessage(messageOrigin, messageType);
-            return (T) message.Body;
+            return (T)message.Body;
         }
 
         internal void Receive(Action<BinaryReader> action)
         {
             var data = Receive();
-            using (var memoryStream = new MemoryStream(data))
+            using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                using (var reader = new BinaryReader(memoryStream))
-                {
-                    action(reader);
-                }
+                action(reader);
             }
         }
 
@@ -232,7 +225,7 @@ namespace Miracle.FileZilla.Api
 #if DEBUG
                 else
                 {
-                    TraceData(string.Format("Message ignored: {0}/{1} with length {2}", check.MessageOrigin,check.MessageType,check.RawData.Length), check.RawData);
+                    TraceData(string.Format("Message ignored: {0}/{1} with length {2}", check.MessageOrigin, check.MessageType, check.RawData.Length), check.RawData);
                 }
 #endif
             }
@@ -253,19 +246,16 @@ namespace Miracle.FileZilla.Api
         {
             var data = Receive();
             var list = new List<Message>();
-            using (var memoryStream = new MemoryStream(data))
+            using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                using (var reader = new BinaryReader(memoryStream))
+                while (reader.BaseStream.Position < data.Length)
                 {
-                    while (memoryStream.Position < data.Length)
-                    {
-                        var b = reader.ReadByte();
-                        var count = reader.ReadInt32();
+                    var b = reader.ReadByte();
+                    var count = reader.ReadInt32();
 
-                        byte[] payload = reader.ReadBytes(count);
-                        var message = new Message((MessageOrigin) (b & 0x3),(MessageType) (b >> 2),payload);
-                        list.Add(message);
-                    }
+                    byte[] payload = reader.ReadBytes(count);
+                    var message = new Message((MessageOrigin)(b & 0x3), (MessageType)(b >> 2), payload);
+                    list.Add(message);
                 }
             }
             return list.ToArray();

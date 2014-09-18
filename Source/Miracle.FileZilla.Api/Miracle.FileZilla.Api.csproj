@@ -41,6 +41,7 @@
     <Compile Include="AdminSocket.cs" />
     <Compile Include="ApiException.cs" />
     <Compile Include="BinaryExtensions.cs" />
+    <Compile Include="Hex.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageOrigin.cs" />

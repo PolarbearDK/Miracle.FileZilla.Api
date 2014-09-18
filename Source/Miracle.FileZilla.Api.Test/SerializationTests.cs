@@ -23,25 +23,18 @@ namespace Miracle.FileZilla.Api.Test
             var source = fixture.Create<T>();
             var target = new T();
 
-            byte[] data;
-
-            using (var memoryStream = new MemoryStream())
+            var memoryStream = new MemoryStream();
+            using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8))
             {
-                using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8))
-                {
-                    source.Serialize(writer);
-                    data = memoryStream.ToArray();
-                }
+                source.Serialize(writer);
             }
+            byte[] data = memoryStream.ToArray();
             
-            HexDump(data);
+            Hex.Dump(Console.Out, data);
 
-            using (var memoryStream = new MemoryStream(data))
+            using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                using (var reader = new BinaryReader(memoryStream))
-                {
-                    target.Deserialize(reader);
-                }
+                target.Deserialize(reader);
             }
 
             var compareLogic = new CompareLogic();
@@ -96,35 +89,6 @@ namespace Miracle.FileZilla.Api.Test
         public void UserTest()
         {
             TestSerializationAndDeserialization<User>();
-        }
-
-        private void HexDump(byte[] data)
-        {
-            var hex = new StringBuilder(48);
-            var ascii = new StringBuilder(16);
-            int offset = 0;
-            const int rowSize = 16;
-
-            foreach (var b in data)
-            {
-                hex.AppendFormat("{0:X2} ", b);
-                ascii.Append(b > 31 ? (char)b : '.');
-
-                if (ascii.Length == rowSize)
-                {
-                    Debug.Print("{0:X4} : {1}{2} {0}", offset, hex, ascii);
-                    hex.Clear();
-                    ascii.Clear();
-                    offset += rowSize;
-                }
-            }
-
-            if (ascii.Length != 0)
-            {
-                while (hex.Length < 48) hex.Append(' ');
-                while (ascii.Length < 16) ascii.Append(' ');
-                Debug.Print("{0:X4} : {1}{2} {0}", offset, hex, ascii);
-            }
         }
     }
 }
