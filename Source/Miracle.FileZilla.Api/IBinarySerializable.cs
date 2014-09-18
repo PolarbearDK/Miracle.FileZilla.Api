@@ -11,11 +11,14 @@ namespace Miracle.FileZilla.Api
         /// Deserialise FileZilla binary data into object
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
-        void Deserialize(BinaryReader reader);
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        void Deserialize(BinaryReader reader, int protocolVersion);
+
         /// <summary>
         /// Serialise object into FileZilla binary data
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
-        void Serialize(BinaryWriter writer);
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        void Serialize(BinaryWriter writer, int protocolVersion);
     }
 }

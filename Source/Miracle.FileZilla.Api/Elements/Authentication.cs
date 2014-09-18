@@ -17,7 +17,8 @@ namespace Miracle.FileZilla.Api.Elements
         /// Deserialise FileZilla binary data into object
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
-        public void Deserialize(BinaryReader reader)
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion)
         {
             reader.Verify((byte)0);
             reader.ReadLength(
@@ -30,7 +31,7 @@ namespace Miracle.FileZilla.Api.Elements
                 });
         }
 
-        public void Serialize(BinaryWriter writer)
+        public void Serialize(BinaryWriter writer, int protocolVersion)
         {
             throw new NotImplementedException();
         }

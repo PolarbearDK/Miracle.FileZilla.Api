@@ -54,25 +54,27 @@ namespace Miracle.FileZilla.Api.Elements
         /// Deserialise FileZilla binary data into object
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
-        public void Deserialize(BinaryReader reader)
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion)
         {
             var options = reader.ReadByte();
             SpeedLimitType = (SpeedLimitType)(options & 0x3);
             BypassServerSpeedLimit = (TriState)(options >> 2);
             ConstantSpeedLimit = reader.ReadBigEndianInt16();
-            SpeedLimitRules = reader.ReadList<SpeedLimitRule>();
+            SpeedLimitRules = reader.ReadList<SpeedLimitRule>(protocolVersion);
         }
 
         /// <summary>
         /// Serialise object into FileZilla binary data
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
-        public void Serialize(BinaryWriter writer)
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        public void Serialize(BinaryWriter writer, int protocolVersion)
         {
             var options = (byte)(((byte)SpeedLimitType & 0x3) | ((byte)BypassServerSpeedLimit << 2));
             writer.Write(options);
             writer.WriteBigEndianInt16(ConstantSpeedLimit);
-            writer.WriteList(SpeedLimitRules);
+            writer.WriteList(SpeedLimitRules, protocolVersion);
         }
     }
 }

@@ -7,13 +7,13 @@ namespace Miracle.FileZilla.Api.Elements
     {
         public string ErrorMessage { get; set; }
 
-        public void Deserialize(BinaryReader reader)
+        public void Deserialize(BinaryReader reader, int protocolVersion)
         {
             reader.Verify((byte)1);
             ErrorMessage = reader.ReadText();
         }
 
-        public void Serialize(BinaryWriter writer)
+        public void Serialize(BinaryWriter writer, int protocolVersion)
         {
             throw new NotImplementedException();
         }

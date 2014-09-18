@@ -30,20 +30,22 @@ namespace Miracle.FileZilla.Api.Elements
         /// Deserialise FileZilla binary data into object
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
-        public void Deserialize(BinaryReader reader)
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            Groups = reader.ReadList<Group>();
-            Users = reader.ReadList<User>();
+            Groups = reader.ReadList<Group>(protocolVersion);
+            Users = reader.ReadList<User>(protocolVersion);
         }
 
         /// <summary>
         /// Serialise object into FileZilla binary data
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
-        public void Serialize(BinaryWriter writer)
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        public void Serialize(BinaryWriter writer, int protocolVersion)
         {
-            writer.WriteList(Groups);
-            writer.WriteList(Users);
+            writer.WriteList(Groups, protocolVersion);
+            writer.WriteList(Users, protocolVersion);
         }
     }
 }

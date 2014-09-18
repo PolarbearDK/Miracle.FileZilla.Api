@@ -11,15 +11,15 @@ namespace Miracle.FileZilla.Api
         public byte[] RawData { get; private set; }
         public object Body;
 
-        public Message(MessageOrigin messageOrigin, MessageType messageType, byte[] rawData)
+        public Message(MessageOrigin messageOrigin, MessageType messageType, byte[] rawData, int protocolVersion)
         {
             MessageOrigin = messageOrigin;
             MessageType = messageType;
             RawData = rawData;
-            Body = ParseMessage(messageOrigin, messageType, rawData);
+            Body = ParseMessage(messageOrigin, messageType, rawData, protocolVersion);
         }
 
-        private static object ParseMessage(MessageOrigin messageOrigin, MessageType messageType, byte[] data)
+        private static object ParseMessage(MessageOrigin messageOrigin, MessageType messageType, byte[] data, int protocolVersion)
         {
             switch (messageOrigin)
             {
@@ -31,7 +31,7 @@ namespace Miracle.FileZilla.Api
                         case MessageType.Authenticate:
                             break;
                         case MessageType.Error:
-                            return data.Read<Error>();
+                            return data.Read<Error>(protocolVersion);
                         case MessageType.ServerState:
                             return data.Read(reader => (ServerState) reader.ReadBigEndianInt16());
                         case MessageType.UserControl:
@@ -40,7 +40,7 @@ namespace Miracle.FileZilla.Api
                             switch (userControl)
                             {
                                 case UserControl.GetList:
-                                    return data.Read(reader => reader.ReadList<Connection>());
+                                    return data.Read(reader => reader.ReadList<Connection>(protocolVersion));
                                 case UserControl.ConNop:
                                     break;
                                 case UserControl.Kick:
@@ -60,7 +60,7 @@ namespace Miracle.FileZilla.Api
                         case MessageType.AccountSettings:
                             return data.Length == 1 
                                 ? (object) (data[0] == 0) 
-                                : data.Read<AccountSettings>();
+                                : data.Read<AccountSettings>(protocolVersion);
                         default:
                             throw new ArgumentOutOfRangeException("messageType");
                     }

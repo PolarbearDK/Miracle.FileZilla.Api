@@ -39,12 +39,12 @@ namespace Miracle.FileZilla.Api
             writer.Write((byte)(value & 0xFF));
         }
 
-        public static T Read<T>(this byte[] data) where T : IBinarySerializable, new()
+        public static T Read<T>(this byte[] data, int protocolVersion) where T : IBinarySerializable, new()
         {
             return data.Read(reader =>
             {
                 var item = new T();
-                item.Deserialize(reader);
+                item.Deserialize(reader, protocolVersion);
                 return item;
             });
         }
@@ -60,28 +60,28 @@ namespace Miracle.FileZilla.Api
             }
         }
 
-        public static T Read<T>(this BinaryReader reader) where T : IBinarySerializable, new()
+        public static T Read<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
         {
             var item = new T();
-            item.Deserialize(reader);
+            item.Deserialize(reader, protocolVersion);
             return item;
         }
 
-        public static void Write<T>(this BinaryWriter writer, T item) where T : IBinarySerializable
+        public static void Write<T>(this BinaryWriter writer, T item, int protocolVersion) where T : IBinarySerializable
         {
             if(item.GetType() != typeof(T))
                 throw new ApiException(string.Format("Attempt to serialize type {0} as type {1}.", item.GetType(), typeof(T)));
 
-            item.Serialize(writer);
+            item.Serialize(writer, protocolVersion);
         }
 
-        public static List<T> ReadList<T>(this BinaryReader reader) where T : IBinarySerializable, new()
+        public static List<T> ReadList<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
         {
             int length = reader.ReadBigEndianInt16();
             var list = new List<T>();
             for (int i = 0; i < length; i++)
             {
-                list.Add(reader.Read<T>());
+                list.Add(reader.Read<T>(protocolVersion));
             }
             return list;
         }
@@ -97,7 +97,7 @@ namespace Miracle.FileZilla.Api
             return list.ToArray();
         }
 
-        public static void WriteList<T>(this BinaryWriter writer, IList<T> list) where T : IBinarySerializable
+        public static void WriteList<T>(this BinaryWriter writer, IList<T> list, int protocolVersion) where T : IBinarySerializable
         {
             if(list.Count > ushort.MaxValue)
                 throw new ApiException(string.Format("Lists of more than {0} elements is not supported by the FileZilla API.", ushort.MaxValue));
@@ -105,7 +105,7 @@ namespace Miracle.FileZilla.Api
             writer.WriteBigEndianInt16((ushort)list.Count);
             foreach (var item in list)
             {
-                writer.Write(item);
+                writer.Write(item, protocolVersion);
             }
         }
 

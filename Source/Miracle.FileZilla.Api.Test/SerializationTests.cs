@@ -12,6 +12,8 @@ namespace Miracle.FileZilla.Api.Test
     [TestFixture]
     public class SerializationTests
     {
+        public const int ProtocolVersion = 0x00010F00;
+
         private void TestSerializationAndDeserialization<T>(Action<Fixture> customizeAction) where T : IBinarySerializable, new()
         {
             // Fixture setup
@@ -26,7 +28,7 @@ namespace Miracle.FileZilla.Api.Test
             var memoryStream = new MemoryStream();
             using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8))
             {
-                source.Serialize(writer);
+                source.Serialize(writer, ProtocolVersion);
             }
             byte[] data = memoryStream.ToArray();
             
@@ -34,7 +36,7 @@ namespace Miracle.FileZilla.Api.Test
 
             using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                target.Deserialize(reader);
+                target.Deserialize(reader, ProtocolVersion);
             }
 
             var compareLogic = new CompareLogic();

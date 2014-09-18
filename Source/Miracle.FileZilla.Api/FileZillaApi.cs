@@ -15,11 +15,11 @@ namespace Miracle.FileZilla.Api
         /// <summary>
         /// Versions used to develop this API
         /// </summary>
-        public const uint DevelopmentServerVersion = 0x00094600;
+        public const int DevelopmentServerVersion = 0x00094600;
         /// <summary>
         /// Versions used to develop this API
         /// </summary>
-        public const uint DevelopmentProtocolVersion = 0x00010F00;
+        public const int DevelopmentProtocolVersion = 0x00010F00;
         /// <summary>
         /// Defailt IP
         /// </summary>
@@ -71,7 +71,7 @@ namespace Miracle.FileZilla.Api
                 ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
                 ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
                 authentication = reader.BaseStream.Length > 15
-                    ? reader.Read<Authentication>()
+                    ? reader.Read<Authentication>(ProtocolVersion)
                     : null;
             });
 
@@ -156,7 +156,7 @@ namespace Miracle.FileZilla.Api
         /// <returns>Account settings including all users and groups</returns>
         public bool SetAccountSettings(AccountSettings accountSettings)
         {
-            SendCommand(MessageOrigin.Client, MessageType.AccountSettings, accountSettings.Serialize);
+            SendCommand(MessageOrigin.Client, MessageType.AccountSettings, writer => accountSettings.Serialize(writer, ProtocolVersion));
             return Receive<bool>(MessageOrigin.Server, MessageType.AccountSettings);
         }
 
@@ -254,7 +254,7 @@ namespace Miracle.FileZilla.Api
                     var count = reader.ReadInt32();
 
                     byte[] payload = reader.ReadBytes(count);
-                    var message = new Message((MessageOrigin)(b & 0x3), (MessageType)(b >> 2), payload);
+                    var message = new Message((MessageOrigin)(b & 0x3), (MessageType)(b >> 2), payload, ProtocolVersion);
                     list.Add(message);
                 }
             }
