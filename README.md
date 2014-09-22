@@ -5,13 +5,13 @@ Managed api for FileZilla FTP server. Allows you to do basically the same as the
 Target audience is everyone who wants to automate the administration of FileZilla server, particularly user/group management.
 
 ##Features
-* Get/Set Groups/Users using GetAccountSettings/SetAccountSettings
-* Get/Set server state using GetServerState/SetServerState
-* Get/Set server settings GetSettings/SetSettings
-* Get active connections using GetConnections()
-* Kick connection using Kick(connectionId)
-* Ban IP (and kick) using BanIp(connectionId)
-* Use FileZillaServerProtocol for more advanced features.
+* Get/Set Groups/Users using GetAccountSettings/SetAccountSettings methods.
+* Get/Set server state using GetServerState/SetServerState methods.
+* Get/Set server settings using GetSettings/SetSettings methods.
+* Get active connections using GetConnections method.
+* Kick connection using Kick method.
+* Ban IP (and kick) using BanIp method.
+* Use FileZillaServerProtocol for more advanced implemetations.
 
 ##Example: Create user in 5 easy steps:
 
@@ -89,4 +89,4 @@ Groups are managed just like Users using accountSettings.Groups.
 
 ##Note! 
 * If you handle a lot of users, you will need to increase the size of the input buffer (BufferSize property)
-* Miracle.FileZilla.Api was developed using FileZilla Server version 0.9.46 beta for Windows, and is only testet with that version.
+* Miracle.FileZilla.Api was developed using FileZilla Server version 0.9.46 beta for Windows, and is only testet with that version. 
