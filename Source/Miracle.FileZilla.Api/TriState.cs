@@ -1,4 +1,4 @@
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// Enum representing a Tri-state checkbox

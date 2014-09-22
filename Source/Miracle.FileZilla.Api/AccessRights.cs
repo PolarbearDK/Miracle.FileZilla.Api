@@ -1,6 +1,6 @@
 using System;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// FTP rights to files/folder

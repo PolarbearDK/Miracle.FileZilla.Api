@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -7,10 +8,9 @@ using System.Net.Sockets;
 namespace Miracle.FileZilla.Api
 {
     /// <summary>
-    /// Base class used for low level communication with FileZilla admin API
-    /// Note! BufferSize must be set to a value large enough to handle incomming data from FileZilla server.
+    /// Base class used for communication with a socket
     /// </summary>
-    public class AdminSocket : IDisposable
+    public class SocketCommunication : IDisposable
     {
         private readonly IPEndPoint _ipe;
         private Socket _socket;
@@ -26,7 +26,7 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="address">IP address of filezilla server.</param>
         /// <param name="port">Admin port as specified when FileZilla server were installed</param>
-        protected AdminSocket(IPAddress address, int port)
+        protected SocketCommunication(IPAddress address, int port)
         {
             _ipe = new IPEndPoint(address, port);
             _socket = new Socket(_ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -42,6 +42,10 @@ namespace Miracle.FileZilla.Api
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Dispose object
+        /// </summary>
+        /// <param name="disposing">Dispose unmanaged resources?</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -100,12 +104,9 @@ namespace Miracle.FileZilla.Api
         /// <param name="data">Binary data to send</param>
         protected void Send(byte[] data)
         {
-
             if (!IsConnected) throw new ApiException("Not connected");
-#if DEBUG
-            if (Trace)
-                TraceData("Send", data);
-#endif
+
+            LogData("Send", data);
             _socket.Send(data);
         }
 
@@ -124,20 +125,27 @@ namespace Miracle.FileZilla.Api
             if(bytesRec == BufferSize)
                 throw new ApiException("Buffer too small. Increase BufferSize parameter");
             var data = _buffer.Take(bytesRec).ToArray();
-#if DEBUG
-            if (Trace)
-                TraceData("Receive", data);
-#endif
+            LogData("Receive", data);
             return data;
         }
 
-#if DEBUG
-        public bool Trace { get; set; }
-        protected static void TraceData(string text, byte[] bytes)
+        /// <summary>
+        /// Log for debugging purposes
+        /// </summary>
+        public TextWriter Log { get; set; }
+
+        /// <summary>
+        /// Write data to log as hex dump. (Set Log parameter to activate)
+        /// </summary>
+        /// <param name="text">Label to write before hex dump</param>
+        /// <param name="bytes">Data bytes to hex dump</param>
+        protected void LogData(string text, byte[] bytes)
         {
-            Debug.WriteLine("{0}: {1}",DateTime.Now.TimeOfDay, text);
-            Debug.Write(Hex.Dump(bytes, 1024));
+            if (Log != null)
+            {
+                Log.WriteLine("{0}: {1}", DateTime.Now.TimeOfDay, text);
+                Hex.Dump(Log, bytes, 1024);
+            }
         }
-#endif
     }
 }

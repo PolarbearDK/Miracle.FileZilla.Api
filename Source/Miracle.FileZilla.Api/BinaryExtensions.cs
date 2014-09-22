@@ -18,6 +18,24 @@ namespace Miracle.FileZilla.Api
             writer.Write((byte)(value & 0xFF));
         }
 
+        public static int ReadBigEndianInt24(this BinaryReader reader)
+        {
+            var b1 = reader.ReadByte();
+            var b2 = reader.ReadByte();
+            var b3 = reader.ReadByte();
+            return (int)(
+                b1 << 16 |
+                b2 << 8 |
+                b3);
+        }
+
+        public static void WriteBigEndianInt24(this BinaryWriter writer, int value)
+        {
+            writer.Write((byte)((value >> 16) & 0xFF));
+            writer.Write((byte)((value >> 8) & 0xFF));
+            writer.Write((byte)(value & 0xFF));
+        }
+
         public static uint ReadBigEndianInt32(this BinaryReader reader)
         {
             var b1 = reader.ReadByte();
@@ -37,6 +55,20 @@ namespace Miracle.FileZilla.Api
             writer.Write((byte)((value >> 16) & 0xFF));
             writer.Write((byte)((value >> 8) & 0xFF));
             writer.Write((byte)(value & 0xFF));
+        }
+
+        public static T[] ReadArray<T>(this byte[] data, int protocolVersion) where T : IBinarySerializable, new()
+        {
+            var list = new List<T>();
+            using (var reader = new BinaryReader(new MemoryStream(data)))
+            {
+                while (reader.BaseStream.Position != data.Length)
+                {
+                    list.Add(reader.Read<T>(protocolVersion));
+                }
+            }
+            return list.ToArray();
+
         }
 
         public static T Read<T>(this byte[] data, int protocolVersion) where T : IBinarySerializable, new()
@@ -115,6 +147,32 @@ namespace Miracle.FileZilla.Api
             if (howMany <= 0) return null;
             var data = reader.ReadBytes(howMany);
             return Encoding.UTF8.GetString(data);
+        }
+
+        public static string ReadRemainingAsText(this BinaryReader reader)
+        {
+            byte[] textBytes = reader.ReadBytes((int) (reader.BaseStream.Length-reader.BaseStream.Position));
+            return Encoding.UTF8.GetString(textBytes);
+        }
+
+        public static string ReadText24(this BinaryReader reader)
+        {
+            var howMany = reader.ReadBigEndianInt24();
+            if (howMany <= 0) return null;
+            var data = reader.ReadBytes(howMany);
+            return Encoding.UTF8.GetString(data);
+        }
+
+        public static void WriteText24(this BinaryWriter writer, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                writer.WriteBigEndianInt24(0);
+            else
+            {
+                var data = Encoding.UTF8.GetBytes(text);
+                writer.WriteBigEndianInt24((ushort) data.Length);
+                writer.Write(data);
+            }
         }
 
         public static void WriteText(this BinaryWriter writer, string text)
@@ -206,7 +264,7 @@ namespace Miracle.FileZilla.Api
         public static T ReadLength<T>(this BinaryReader reader, int length, Func<BinaryReader, T> action)
         {
             var pos = reader.BaseStream.Position;
-            T item = action(reader);
+            T item = length > 0 ? action(reader) : default(T);
             if (reader.BaseStream.Position - pos != length)
                 throw new ProtocolException(string.Format("Serialization error. Length expected {0} actual {1}", reader.BaseStream.Position - pos, length));
             return item;

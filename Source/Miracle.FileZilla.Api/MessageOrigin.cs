@@ -6,15 +6,15 @@ namespace Miracle.FileZilla.Api
     public enum MessageOrigin : byte
     {
         /// <summary>
-        /// Message originated from Client
+        /// Message is a request from client
         /// </summary>
-        Client = 0,
+        ClientRequest = 0,
         /// <summary>
-        /// Message originated from Server
+        /// Message is a server reply to a client request
         /// </summary>
-        Server = 1,
+        ServerReply = 1,
         /// <summary>
-        /// Message originated from Server
+        /// Message is a status update from server
         /// </summary>
         ServerMessage = 2,
     }

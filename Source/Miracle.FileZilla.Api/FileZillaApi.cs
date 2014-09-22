@@ -1,43 +1,13 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using Miracle.FileZilla.Api.Elements;
 
 namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// FileZilla server API
     /// </summary>
-    public class FileZillaApi : AdminSocket, IFileZillaApi
+    public class FileZillaApi : FileZillaServerProtocol, IFileZillaApi
     {
-        /// <summary>
-        /// Versions used to develop this API
-        /// </summary>
-        public const int DevelopmentServerVersion = 0x00094600;
-        /// <summary>
-        /// Versions used to develop this API
-        /// </summary>
-        public const int DevelopmentProtocolVersion = 0x00010F00;
-        /// <summary>
-        /// Defailt IP
-        /// </summary>
-        public const string DefaultIp = "127.0.0.1";
-        /// <summary>
-        /// Default port
-        /// </summary>
-        public const int DefaultPort = 14147;
-
-        /// <summary>
-        /// Server version. Populated by Connect method.
-        /// </summary>
-        public int ServerVersion { get; private set; }
-        /// <summary>
-        /// Protocol version. Populated by Connect method.
-        /// </summary>
-        public int ProtocolVersion { get; private set; }
-
         /// <summary>
         /// Construct FileZillaApi using default IP/port
         /// </summary>
@@ -57,44 +27,52 @@ namespace Miracle.FileZilla.Api
         }
 
         /// <summary>
-        /// Connect to FileZilla admin console 
+        /// Get state of FileZilla server
         /// </summary>
-        /// <param name="password">FileZilla admin password</param>
-        public void Connect(string password)
+        /// <returns>FileZilla server state</returns>
+        public ServerState GetServerState()
         {
-            Authentication authentication = null;
-            Connect();
-
-            Receive(reader =>
-            {
-                reader.Verify("FZS");
-                ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
-                ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
-                authentication = reader.BaseStream.Length > 15
-                    ? reader.Read<Authentication>(ProtocolVersion)
-                    : null;
-            });
-
-            if (authentication != null)
-            {
-                Authenticate(authentication.HashPassword(password));
-            }
+            SendCommand(MessageType.ServerState);
+            return Receive<ServerState>(MessageType.ServerState);
         }
 
-        private void Authenticate(byte[] hashedPassword)
+        /// <summary>
+        /// Set state of FileZilla server
+        /// </summary>
+        /// <param name="serverState">The new state</param>
+        /// <returns></returns>
+        public ServerState SetServerState(ServerState serverState)
         {
-            SendCommand(MessageOrigin.Client, MessageType.Authenticate, hashedPassword);
-            Receive(MessageOrigin.Server, MessageType.Authenticate);
+            SendCommand(MessageType.ServerState, x=>x.WriteBigEndianInt16((ushort)serverState));
+            return Receive<ServerState>(MessageType.ServerState);
         }
 
         /// <summary>
         /// Get state of FileZilla server
         /// </summary>
         /// <returns>FileZilla server state</returns>
-        public ServerState GetServerState()
+        public Settings GetSettings()
         {
-            SendCommand(MessageOrigin.Client, MessageType.ServerState);
-            return Receive<ServerState>(MessageOrigin.Server, MessageType.ServerState);
+            SendCommand(MessageType.Settings);
+            return Receive<Settings>(MessageType.Settings);
+        }
+
+        /// <summary>
+        /// Get state of FileZilla server
+        /// </summary>
+        /// <returns>True if Success</returns>
+        public bool SetSettings(Settings settings)
+        {
+            // Password get special treatment. If password is null, then set it to invalid (*).
+            // That way we can distinguish between 
+            //   - Not set (Null, serialized as "*")
+            //   - Blank password ("")
+            //   - Actual password
+            var adminPassword = settings.GetOption(OptionId.ADMINPASS);
+            if (adminPassword.TextValue == null) adminPassword.TextValue = "*";
+
+            SendCommand(MessageType.Settings, writer => settings.Serialize(writer, ProtocolVersion));
+            return Receive<bool>(MessageType.Settings);
         }
 
         /// <summary>
@@ -103,8 +81,8 @@ namespace Miracle.FileZilla.Api
         /// <returns>List of connections</returns>
         public List<Connection> GetConnections()
         {
-            SendCommand(MessageOrigin.Client, MessageType.UserControl, x => x.Write((byte)UserControl.GetList));
-            return Receive<List<Connection>>(MessageOrigin.Server, MessageType.UserControl);
+            SendCommand(MessageType.UserControl, x => x.Write((byte)UserControl.GetList));
+            return Receive<List<Connection>>(MessageType.UserControl);
         }
 
         /// <summary>
@@ -114,13 +92,13 @@ namespace Miracle.FileZilla.Api
         /// <returns>True if successfull, otherwise false</returns>
         public bool Kick(int connectionId)
         {
-            SendCommand(MessageOrigin.Client, MessageType.UserControl, x =>
+            SendCommand(MessageType.UserControl, x =>
             {
                 x.Write((byte)UserControl.Kick);
                 x.Write(connectionId);
             });
 
-            return Receive<bool>(MessageOrigin.Server, MessageType.UserControl);
+            return Receive<bool>(MessageType.UserControl);
         }
 
         /// <summary>
@@ -130,13 +108,13 @@ namespace Miracle.FileZilla.Api
         /// <returns>True if successfull, otherwise false</returns>
         public bool BanIp(int connectionId)
         {
-            SendCommand(MessageOrigin.Client, MessageType.UserControl, x =>
+            SendCommand(MessageType.UserControl, x =>
             {
                 x.Write((byte)UserControl.BanIp);
                 x.Write(connectionId);
             });
 
-            return Receive<bool>(MessageOrigin.Server, MessageType.UserControl);
+            return Receive<bool>(MessageType.UserControl);
         }
 
         /// <summary>
@@ -145,120 +123,19 @@ namespace Miracle.FileZilla.Api
         /// <returns>Account settings including all users and groups</returns>
         public AccountSettings GetAccountSettings()
         {
-            SendCommand(MessageOrigin.Client, MessageType.AccountSettings);
-            return Receive<AccountSettings>(MessageOrigin.Server, MessageType.AccountSettings);
+            SendCommand(MessageType.AccountSettings);
+            return Receive<AccountSettings>(MessageType.AccountSettings);
         }
 
         /// <summary>
         /// Set account settings. 
         /// Note! This replaces ALL users and groups on FileZilla server.
         /// </summary>
-        /// <returns>Account settings including all users and groups</returns>
+        /// <returns>True if Success</returns>
         public bool SetAccountSettings(AccountSettings accountSettings)
         {
-            SendCommand(MessageOrigin.Client, MessageType.AccountSettings, writer => accountSettings.Serialize(writer, ProtocolVersion));
-            return Receive<bool>(MessageOrigin.Server, MessageType.AccountSettings);
-        }
-
-        internal void SendCommand(MessageOrigin messageOrigin, MessageType messageType)
-        {
-            SendCommand(messageOrigin, messageType, new byte[] { });
-        }
-
-        internal void SendCommand(MessageOrigin messageOrigin, MessageType messageType, byte data)
-        {
-            SendCommand(messageOrigin, messageType, new[] { data });
-        }
-
-        internal void SendCommand(MessageOrigin messageOrigin, MessageType messageType, byte[] data)
-        {
-            SendCommand(messageOrigin, messageType, writer => writer.Write(data));
-        }
-
-        internal void SendCommand(MessageOrigin messageOrigin, MessageType messageType, Action<BinaryWriter> action)
-        {
-            var stream = new MemoryStream();
-            using (var writer = new BinaryWriter(stream))
-            {
-                var cmd = (byte)(((int)messageOrigin) | ((byte)messageType << 2));
-                writer.Write(cmd);
-                writer.WriteLength(action);
-            }
-
-            Send(stream.ToArray());
-        }
-
-        internal void Receive(MessageOrigin messageOrigin, MessageType messageType)
-        {
-            var message = ReceiveMessage(messageOrigin, messageType);
-            if (message.RawData.Length != 0)
-                throw new ProtocolException("Expected message with length 0, actual " + message.RawData.Length);
-        }
-
-        internal T Receive<T>(MessageOrigin messageOrigin, MessageType messageType)
-        {
-            var message = ReceiveMessage(messageOrigin, messageType);
-            return (T)message.Body;
-        }
-
-        internal void Receive(Action<BinaryReader> action)
-        {
-            var data = Receive();
-            using (var reader = new BinaryReader(new MemoryStream(data)))
-            {
-                action(reader);
-            }
-        }
-
-        internal Message ReceiveMessage(MessageOrigin messageOrigin, MessageType messageType)
-        {
-            var messages = ReceiveAndSplitIntoIndividualMessages();
-            Message message = null;
-            foreach (Message check in messages)
-            {
-                if (check.MessageOrigin == messageOrigin && check.MessageType == messageType)
-                {
-                    if (message != null)
-                        throw new ProtocolException("Multiple commands matched");
-                    message = check;
-                }
-#if DEBUG
-                else
-                {
-                    TraceData(string.Format("Message ignored: {0}/{1} with length {2}", check.MessageOrigin, check.MessageType, check.RawData.Length), check.RawData);
-                }
-#endif
-            }
-
-            if (message == null)
-            {
-                // All server messages? Poll again for the desired reply
-                if (messages.All(x => x.MessageOrigin == MessageOrigin.ServerMessage))
-                    return ReceiveMessage(messageOrigin, messageType);
-
-                throw ProtocolException.Create(messageOrigin, messageType, messages);
-            }
-
-            return message;
-        }
-
-        internal Message[] ReceiveAndSplitIntoIndividualMessages()
-        {
-            var data = Receive();
-            var list = new List<Message>();
-            using (var reader = new BinaryReader(new MemoryStream(data)))
-            {
-                while (reader.BaseStream.Position < data.Length)
-                {
-                    var b = reader.ReadByte();
-                    var count = reader.ReadInt32();
-
-                    byte[] payload = reader.ReadBytes(count);
-                    var message = new Message((MessageOrigin)(b & 0x3), (MessageType)(b >> 2), payload, ProtocolVersion);
-                    list.Add(message);
-                }
-            }
-            return list.ToArray();
+            SendCommand(MessageType.AccountSettings, writer => accountSettings.Serialize(writer, ProtocolVersion));
+            return Receive<bool>(MessageType.AccountSettings);
         }
     }
 }

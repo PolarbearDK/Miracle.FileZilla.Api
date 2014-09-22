@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
-using Miracle.FileZilla.Api.Elements;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
@@ -54,12 +52,6 @@ namespace Miracle.FileZilla.Api.Test
 
 
         [Test]
-        public void SharedFolderTest()
-        {
-            TestSerializationAndDeserialization<SharedFolder>();
-        }
-
-        [Test]
         public void AccountSettingsTest()
         {
             TestSerializationAndDeserialization<AccountSettings>(
@@ -73,6 +65,20 @@ namespace Miracle.FileZilla.Api.Test
             TestSerializationAndDeserialization<Group>(
                 // Do not create Tristate.Default values
                 fixture => fixture.Customizations.Add(new RandomTriStateSequenceGenerator(TriState.No, TriState.Yes)));
+        }
+
+        [Test]
+        public void SharedFolderTest()
+        {
+            TestSerializationAndDeserialization<SharedFolder>();
+        }
+
+        [Test]
+        public void SettingsTest()
+        {
+            TestSerializationAndDeserialization<Settings>(
+                // Do not create Tristate.Default values 
+                fixture => fixture.Customizations.Add(new RandomOptionGenerator()));
         }
 
         [Test]

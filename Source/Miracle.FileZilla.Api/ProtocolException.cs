@@ -45,12 +45,11 @@ namespace Miracle.FileZilla.Api
         }
 
 
-        internal static ProtocolException Create(MessageOrigin expectedMessageOrigin, MessageType expectedMessageType, Message[] actualMessages)
+        internal static ProtocolException Create(MessageType expectedMessageType, FileZillaMessage[] actualFileZillaMessages)
         {
-            var message = string.Format("Expected message {0}/{1} actual {2}",
-                expectedMessageOrigin,
+            var message = string.Format("Expected message {0} actual {1}",
                 expectedMessageType,
-                string.Join(",", actualMessages.Select(x => x.MessageOrigin.ToString() + "/" + x.MessageType.ToString()))
+                string.Join(",", actualFileZillaMessages.Select(x => x.MessageOrigin.ToString() + "/" + x.MessageType.ToString()))
             );
             return new ProtocolException(message);
         }

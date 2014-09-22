@@ -61,6 +61,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="RandomOptionGenerator.cs" />
     <Compile Include="RandomDateSequenceGenerator.cs" />
     <Compile Include="RandomTriStateSequenceGenerator.cs" />
     <Compile Include="RandomTimeSpanSequenceGenerator.cs" />

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     internal class Error: IBinarySerializable
     {

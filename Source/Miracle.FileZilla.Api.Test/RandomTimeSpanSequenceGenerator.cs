@@ -14,8 +14,8 @@ namespace Miracle.FileZilla.Api.Test
     /// </remarks>
     public class RandomTimeSpanSequenceGenerator : ISpecimenBuilder
     {
-        private readonly RandomNumericSequenceGenerator randomizer;
-        private readonly bool ignoreFractions;
+        private readonly RandomNumericSequenceGenerator _randomizer;
+        private readonly bool _noFractions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Miracle.FileZilla.Api.Test.RandomTimeSpanSequenceGenerator"/> class.
@@ -31,18 +31,19 @@ namespace Miracle.FileZilla.Api.Test
         /// </summary>
         /// <param name="minTimeSpan">The lower bound of the TimeSpan range.</param>
         /// <param name="maxTimeSpan">The uppder bound of the TimeSpan range.</param>
+        /// <param name="noFractions">Do not generate fraction of seconds</param>
         /// <exception cref="ArgumentException">
         /// <paramref name="minTimeSpan"/> is greater than <paramref name="maxTimeSpan"/>.
         /// </exception>
-        public RandomTimeSpanSequenceGenerator(TimeSpan minTimeSpan, TimeSpan maxTimeSpan, bool ignoreFractions)
+        public RandomTimeSpanSequenceGenerator(TimeSpan minTimeSpan, TimeSpan maxTimeSpan, bool noFractions)
         {
-            this.ignoreFractions = ignoreFractions;
+            _noFractions = noFractions;
             if (minTimeSpan >= maxTimeSpan)
             {
                 throw new ArgumentException("The 'minTimeSpan' argument must be less than the 'maxTimeSpan'.");
             }
 
-            this.randomizer = new RandomNumericSequenceGenerator(minTimeSpan.Ticks, maxTimeSpan.Ticks);
+            _randomizer = new RandomNumericSequenceGenerator(minTimeSpan.Ticks, maxTimeSpan.Ticks);
         }
 
         /// <summary>
@@ -61,25 +62,25 @@ namespace Miracle.FileZilla.Api.Test
                 throw new ArgumentNullException("context");
             }
 
-            return IsNotTimeSpanRequest(request)
-                ? new NoSpecimen(request)
-                : this.CreateRandomTimeSpan(context);
+            return IsTimeSpanRequest(request)
+                ? CreateRandomTimeSpan(context)
+                : new NoSpecimen(request);
         }
 
-        private static bool IsNotTimeSpanRequest(object request)
+        private static bool IsTimeSpanRequest(object request)
         {
-            return !typeof(TimeSpan).IsAssignableFrom(request as Type);
+            return typeof(TimeSpan).IsAssignableFrom(request as Type);
         }
 
         private object CreateRandomTimeSpan(ISpecimenContext context)
         {
-            return new TimeSpan(this.GetRandomNumberOfTicks(context));
+            return new TimeSpan(GetRandomNumberOfTicks(context));
         }
 
         private long GetRandomNumberOfTicks(ISpecimenContext context)
         {
-            var randomNumberOfTicks = (long)this.randomizer.Create(typeof(long), context);
-            if (ignoreFractions)
+            var randomNumberOfTicks = (long)_randomizer.Create(typeof(long), context);
+            if (_noFractions)
                 randomNumberOfTicks = randomNumberOfTicks - (randomNumberOfTicks % TimeSpan.TicksPerSecond);
             return randomNumberOfTicks;
         }

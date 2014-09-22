@@ -1,35 +1,29 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
-    /// Class representing permissions to a shared folder
+    /// Class used to transfer all users and groups to/from FileZilla server
     /// </summary>
-    public class SharedFolder : IBinarySerializable
+    public class AccountSettings: IBinarySerializable
     {
         /// <summary>
-        /// Directory path
+        /// All groups
         /// </summary>
-        public string Directory { get; set; }
-
+        public List<Group> Groups { get; set; }
         /// <summary>
-        /// Optional aliases
+        /// All users
         /// </summary>
-        public List<string> Aliases { get; set; }
-
-        /// <summary>
-        /// Access rights in the directory
-        /// </summary>
-        public AccessRights AccessRights { get; set; }
+        public List<User> Users { get; set; }
 
         /// <summary>
         /// Default constructor (sets defaults as in FileZilla server interface)
         /// </summary>
-        public SharedFolder()
+        public AccountSettings()
         {
-            Aliases = new List<string>();    
-            AccessRights = AccessRights.FileRead | AccessRights.DirList | AccessRights.DirSubdirs;
+            Groups = new List<Group>();
+            Users = new List<User>();
         }
 
         /// <summary>
@@ -39,9 +33,8 @@ namespace Miracle.FileZilla.Api.Elements
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            Directory = reader.ReadText();
-            Aliases = reader.ReadTextList();
-            AccessRights = (AccessRights)reader.ReadBigEndianInt16();
+            Groups = reader.ReadList<Group>(protocolVersion);
+            Users = reader.ReadList<User>(protocolVersion);
         }
 
         /// <summary>
@@ -51,9 +44,8 @@ namespace Miracle.FileZilla.Api.Elements
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Serialize(BinaryWriter writer, int protocolVersion)
         {
-            writer.WriteText(Directory);
-            writer.WriteTextList(Aliases);
-            writer.WriteBigEndianInt16((ushort)AccessRights);
+            writer.WriteList(Groups, protocolVersion);
+            writer.WriteList(Users, protocolVersion);
         }
     }
 }

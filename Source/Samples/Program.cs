@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading;
-using Miracle.FileZilla.Api.Elements;
+using Newtonsoft.Json;
 
 namespace Miracle.FileZilla.Api.Samples
 {
@@ -21,43 +21,133 @@ namespace Miracle.FileZilla.Api.Samples
         private static void Main(string[] args)
         {
             GetServerState();
+            SetServerState();
+            GetSettings();
+            SetSettings();
             GetConnections();
-            //KickFirstConnection();
+            KickFirstConnection();
             CreateUserAndGroup();
             DeleteUser();
             CreateLotsOfUsersAndGroups();
             DeleteLotsOfUsersAndGroups();
-            
-            GetConnectionsLoop();
+            GetMessagesLoop();
         }
 
         private static void GetServerState()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.Connect(ServerPassword);
                 var serverState = fileZillaApi.GetServerState();
                 Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
             }
         }
 
+        private static void SetServerState()
+        {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            {
+                fileZillaApi.Connect(ServerPassword);
+                var serverState = fileZillaApi.GetServerState();
+                Console.WriteLine("State is {0}", serverState);
+
+                // Go offiline
+                serverState = fileZillaApi.SetServerState(ServerState.GoOfflineNow);
+                Console.WriteLine("GoOfflineNow State is {0}", serverState);
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+                serverState = fileZillaApi.GetServerState();
+                Console.WriteLine("State is {0}", serverState);
+
+                // Go online
+                serverState = fileZillaApi.SetServerState(ServerState.Online);
+                Console.WriteLine("State is {0}", serverState);
+
+                // Lock server
+                serverState = fileZillaApi.SetServerState(ServerState.Online | ServerState.Locked);
+                Console.WriteLine("Lock State is {0}", serverState);
+
+                // Unlock
+                serverState = fileZillaApi.SetServerState(ServerState.Online);
+                Console.WriteLine("State is {0}", serverState);
+            }
+        }
+
+        private static void GetSettings()
+        {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            {
+                var stopWatch = Stopwatch2.StartNew();
+
+                fileZillaApi.Connect(ServerPassword);
+                var settings = fileZillaApi.GetSettings();
+                Console.WriteLine("Settings retrieved in {0}.", stopWatch.GetDelta());
+                int optionNumber = 0;
+                foreach (var o in settings.Options)
+                {
+                    Console.WriteLine("  {0} = {1}",
+                        Option.OptionInfos[optionNumber].Text,
+                        o.OptionType == OptionType.Text
+                            ? o.TextValue
+                            : o.NumericValue.ToString()
+                        );
+                    optionNumber++;
+                }
+            }
+        }
+
+        private static void SetSettings()
+        {
+            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            {
+                var stopWatch = Stopwatch2.StartNew();
+
+                fileZillaApi.Connect(ServerPassword);
+                var settings = fileZillaApi.GetSettings();
+                Console.WriteLine("Settings retrieved in {0}.", stopWatch.GetDelta());
+
+                // Select option to modify
+                var option = settings.GetOption(OptionId.WELCOMEMESSAGE);
+
+                // Modify
+                string originalTextValue = option.TextValue;
+                const string newMessage = "Hello world";
+                option.TextValue = newMessage;
+
+                // Save
+                if (!fileZillaApi.SetSettings(settings)) throw new Exception("Uh uh");
+                var settings2 = fileZillaApi.GetSettings();
+
+                // Verify 
+                if(settings.Options.Count() != settings2.Options.Count()) throw new Exception("Uh uh");
+                for (int i = 0; i < settings.Options.Count(); i++)
+                {
+                    if(settings.Options[i].OptionType != Option.OptionInfos[i].OptionType) throw new Exception("Uh uh");
+                    if(settings.Options[i].OptionType != settings2.Options[i].OptionType) throw new Exception("Uh uh");
+                    if(settings.Options[i].NumericValue != settings2.Options[i].NumericValue) throw new Exception("Uh uh");
+                    // Password is sent as "*" when not set
+                    if(settings.Options[i].TextValue != settings2.Options[i].TextValue && !(settings.Options[i].TextValue == "*" && settings2.Options[i].TextValue == null)) throw new Exception("Uh uh");
+                }
+
+                // Restore 
+                settings.GetOption(OptionId.WELCOMEMESSAGE).TextValue = originalTextValue;
+                fileZillaApi.SetSettings(settings);
+            }
+        }
+
         private static void GetConnections()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
 
                 var stopWatch = Stopwatch2.StartNew();
 
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.Connect(ServerPassword);
                 var serverState = fileZillaApi.GetServerState();
                 Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
@@ -72,11 +162,8 @@ namespace Miracle.FileZilla.Api.Samples
         private static void KickFirstConnection()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.Connect(ServerPassword);
 
                 var connections = fileZillaApi.GetConnections();
@@ -95,19 +182,16 @@ namespace Miracle.FileZilla.Api.Samples
         private static void CreateUserAndGroup()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.BufferSize = 100 * 1024 * 1024;
 
                 fileZillaApi.Connect(ServerPassword);
                 var serverState = fileZillaApi.GetServerState();
                 Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
-                
+
                 var accountSettings = fileZillaApi.GetAccountSettings();
                 Console.WriteLine("Account settings with {0} groups and {1} users fetched in {2}.",
                     accountSettings.Groups.Count,
@@ -159,15 +243,12 @@ namespace Miracle.FileZilla.Api.Samples
         private static void DeleteUser()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.BufferSize = 100 * 1024 * 1024;
 
                 var stopWatch = Stopwatch2.StartNew();
-                
+
                 fileZillaApi.Connect(ServerPassword);
                 var serverState = fileZillaApi.GetServerState();
                 Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
@@ -188,11 +269,8 @@ namespace Miracle.FileZilla.Api.Samples
         private static void CreateLotsOfUsersAndGroups()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.BufferSize = 100 * 1024 * 1024;
 
                 var stopWatch = Stopwatch2.StartNew();
@@ -231,7 +309,7 @@ namespace Miracle.FileZilla.Api.Samples
                 {
                     var user = new User
                     {
-                        GroupName = GroupName + (i%MaxGroups), // Reference to group
+                        GroupName = GroupName + (i % MaxGroups), // Reference to group
                         UserName = UserName + i,
                         Password = User.HashPassword("LonglongPasswordwithnumber" + i),
                         SharedFolders = new List<SharedFolder>()
@@ -250,7 +328,7 @@ namespace Miracle.FileZilla.Api.Samples
                     MaxGroups,
                     MaxUsers,
                     stopWatch.GetDelta());
- 
+
                 fileZillaApi.SetAccountSettings(accountSettings);
                 Console.WriteLine("Finished saving account settings in {0}.", stopWatch.GetDelta());
             }
@@ -259,11 +337,8 @@ namespace Miracle.FileZilla.Api.Samples
         private static void DeleteLotsOfUsersAndGroups()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter()})
             {
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
                 fileZillaApi.BufferSize = 100 * 1024 * 1024;
 
                 var stopWatch = Stopwatch2.StartNew();
@@ -286,22 +361,28 @@ namespace Miracle.FileZilla.Api.Samples
             }
         }
 
-        private static void GetConnectionsLoop()
+        private static void GetMessagesLoop()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (var fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port))
+            using (var serverProtocol = new FileZillaServerProtocol(IPAddress.Parse(Ip), Port))
             {
-#if DEBUG
-                fileZillaApi.Trace = true;
-#endif
-                fileZillaApi.Connect(ServerPassword);
+                serverProtocol.Log = new DebugTextWriter();
+                serverProtocol.Connect(ServerPassword);
+                Console.WriteLine("Listening to FileZilla server. Connect to server with FTP client now... (CTRL-C to exit)");
                 while (true)
                 {
-                    Console.WriteLine("Getting active connections... (CTRL-C to exit)");
-                    var connections = fileZillaApi.GetConnections();
-                    foreach (var connection in connections)
+                    serverProtocol.SendCommand(MessageType.Loopback);
+                    var messages = serverProtocol.ReceiveMessages();
+                    foreach (var message in messages)
                     {
-                        Console.WriteLine("{0} {1} {2}", connection.TransferMode, connection.PhysicalFile, connection.UserName);
+                        if (message.MessageType != MessageType.Loopback)
+                        {
+                            Console.WriteLine("{0} {1} ({2}){3}",
+                                message.MessageOrigin,
+                                message.MessageType,
+                                message.Body != null ? message.Body.GetType().Name : "null",
+                                message.Body != null ? JsonConvert.SerializeObject(message.Body) : "");
+                        }
                     }
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }

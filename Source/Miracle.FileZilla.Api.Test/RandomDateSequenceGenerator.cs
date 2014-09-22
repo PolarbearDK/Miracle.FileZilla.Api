@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 
@@ -18,7 +14,7 @@ namespace Miracle.FileZilla.Api.Test
     /// </remarks>
     public class RandomDateSequenceGenerator : ISpecimenBuilder
     {
-        private readonly RandomNumericSequenceGenerator randomizer;
+        private readonly RandomNumericSequenceGenerator _randomizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Ploeh.AutoFixture.RandomDateTimeSequenceGenerator"/> class.
@@ -44,7 +40,7 @@ namespace Miracle.FileZilla.Api.Test
                 throw new ArgumentException("The 'minDate' argument must be less than the 'maxDate'.");
             }
 
-            this.randomizer = new RandomNumericSequenceGenerator(minDate.Ticks, maxDate.Ticks);
+            _randomizer = new RandomNumericSequenceGenerator(minDate.Ticks, maxDate.Ticks);
         }
 
         /// <summary>
@@ -65,7 +61,7 @@ namespace Miracle.FileZilla.Api.Test
 
             return IsNotDateTimeRequest(request)
                        ? new NoSpecimen(request)
-                       : this.CreateRandomDate(context);
+                       : CreateRandomDate(context);
         }
 
         private static bool IsNotDateTimeRequest(object request)
@@ -75,12 +71,12 @@ namespace Miracle.FileZilla.Api.Test
 
         private object CreateRandomDate(ISpecimenContext context)
         {
-            return new DateTime(this.GetRandomNumberOfTicks(context)).Date;
+            return new DateTime(GetRandomNumberOfTicks(context)).Date;
         }
 
         private long GetRandomNumberOfTicks(ISpecimenContext context)
         {
-            return (long)this.randomizer.Create(typeof(long), context);
+            return (long)_randomizer.Create(typeof(long), context);
         }
     }
 }

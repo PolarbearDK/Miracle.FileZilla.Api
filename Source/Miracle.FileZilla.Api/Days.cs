@@ -1,6 +1,6 @@
 using System;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// Flags enumeration representing the days of the week

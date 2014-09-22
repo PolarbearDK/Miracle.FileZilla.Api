@@ -1,30 +1,25 @@
-using System.Collections.Generic;
+using System;
 using System.IO;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
-    /// Class used to transfer all users and groups to/from FileZilla server
+    /// A connection has been added
     /// </summary>
-    public class AccountSettings: IBinarySerializable
+    public class ConnectionAdded : IBinarySerializable
     {
         /// <summary>
-        /// All groups
+        /// Connection Id
         /// </summary>
-        public List<Group> Groups { get; set; }
+        public int ConnectionId { get; set; }
         /// <summary>
-        /// All users
+        /// Connection IP
         /// </summary>
-        public List<User> Users { get; set; }
-
+        public string Ip { get; set; }
         /// <summary>
-        /// Default constructor (sets defaults as in FileZilla server interface)
+        /// Connection Port
         /// </summary>
-        public AccountSettings()
-        {
-            Groups = new List<Group>();
-            Users = new List<User>();
-        }
+        public uint Port { get; set; }
 
         /// <summary>
         /// Deserialise FileZilla binary data into object
@@ -33,8 +28,9 @@ namespace Miracle.FileZilla.Api.Elements
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            Groups = reader.ReadList<Group>(protocolVersion);
-            Users = reader.ReadList<User>(protocolVersion);
+            ConnectionId = reader.ReadInt32();
+            Ip = reader.ReadText();
+            Port = reader.ReadUInt32();
         }
 
         /// <summary>
@@ -44,8 +40,7 @@ namespace Miracle.FileZilla.Api.Elements
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Serialize(BinaryWriter writer, int protocolVersion)
         {
-            writer.WriteList(Groups, protocolVersion);
-            writer.WriteList(Users, protocolVersion);
+            throw new NotImplementedException();
         }
     }
 }

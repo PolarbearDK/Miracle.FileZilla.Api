@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// Class representing a FileZilla user

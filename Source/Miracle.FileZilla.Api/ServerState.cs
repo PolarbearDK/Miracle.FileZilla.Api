@@ -1,6 +1,6 @@
 using System;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// FileZilla server state
@@ -8,6 +8,10 @@ namespace Miracle.FileZilla.Api.Elements
     [Flags]
     public enum ServerState : ushort
     {
+        /// <summary>
+        /// Server is offline
+        /// </summary>
+        Offline = 0x00,
         /// <summary>
         /// Server is online
         /// </summary>

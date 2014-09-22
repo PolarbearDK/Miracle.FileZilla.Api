@@ -1,7 +1,7 @@
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
-    /// Type of speed limit
+    /// OptionType of speed limit
     /// </summary>
     public enum SpeedLimitType: byte
     {

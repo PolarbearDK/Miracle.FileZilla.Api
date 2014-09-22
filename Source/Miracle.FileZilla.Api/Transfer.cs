@@ -1,29 +1,17 @@
 ﻿using System;
 using System.IO;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
-    /// Class representing an active connection to FileZilla
+    /// Class containing information about a FTP transfer
     /// </summary>
-    public class Connection: IBinarySerializable
+    public class Transfer : IBinarySerializable
     {
         /// <summary>
         /// Connection Id. This is the value used to kick/ban connections.
         /// </summary>
         public int ConnectionId { get; set; }
-        /// <summary>
-        /// Source IP of connection (IP of user)
-        /// </summary>
-        public string Ip { get; set; }
-        /// <summary>
-        /// Source port of connection (IP of user)
-        /// </summary>
-        public int Port { get; set; }
-        /// <summary>
-        /// Name of connected user
-        /// </summary>
-        public string UserName { get; set; }
         /// <summary>
         /// Transfer mode
         /// </summary>
@@ -53,9 +41,7 @@ namespace Miracle.FileZilla.Api.Elements
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
             ConnectionId = reader.ReadInt32();
-            Ip = reader.ReadText();
-            Port = reader.ReadInt32();
-            UserName = reader.ReadText();
+            DeserializeChildren(reader, protocolVersion);
             var flags = reader.ReadByte();
             TransferMode = (TransferMode)(flags & 0x3);
 
@@ -71,6 +57,15 @@ namespace Miracle.FileZilla.Api.Elements
         }
 
         /// <summary>
+        /// Let any inheriters serialize additional properties
+        /// </summary>
+        /// <param name="reader">Binary reader to read data from</param>
+        /// <param name="protocolVersion">Current FileZilla protocol version</param>
+        protected virtual void DeserializeChildren(BinaryReader reader, int protocolVersion)
+        {
+        }
+
+        /// <summary>
         /// Serialise object into FileZilla binary data
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
@@ -79,20 +74,5 @@ namespace Miracle.FileZilla.Api.Elements
         {
             throw new NotImplementedException();
         }
-    }
-
-    /// <summary>
-    /// Transfer mode enum specifies what a connection is "doing"
-    /// </summary>
-    public enum TransferMode
-    {
-        /// <summary/>
-        NotSet = 0,
-        /// <summary/>
-        List = 1,
-        /// <summary/>
-        Receive = 2,
-        /// <summary/>
-        Send = 3,
     }
 }

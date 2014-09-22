@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// Object representing a download or upload speed limit
@@ -9,7 +9,7 @@ namespace Miracle.FileZilla.Api.Elements
     public class SpeedLimit : IBinarySerializable
     {
         /// <summary>
-        /// Type of speed limit
+        /// OptionType of speed limit
         /// </summary>
         public SpeedLimitType SpeedLimitType { get; set; }
         /// <summary>

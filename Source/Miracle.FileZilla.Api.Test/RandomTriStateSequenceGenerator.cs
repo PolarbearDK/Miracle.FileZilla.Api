@@ -1,5 +1,4 @@
 ﻿using System;
-using Miracle.FileZilla.Api.Elements;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 

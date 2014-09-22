@@ -3,13 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Miracle.FileZilla.Api.Elements
+namespace Miracle.FileZilla.Api
 {
     /// <summary>
     /// Used during connect to FileZilla server.
     /// </summary>
     internal class Authentication : IBinarySerializable
     {
+        public bool NoPasswordRequired { get; set; }
         byte[] _nonce1;
         byte[] _nonce2;
 
@@ -20,7 +21,7 @@ namespace Miracle.FileZilla.Api.Elements
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            reader.Verify((byte)0);
+            NoPasswordRequired = reader.ReadBoolean();
             reader.ReadLength(
                 reader.ReadInt32(),
                 r2 =>
