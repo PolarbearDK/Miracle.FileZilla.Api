@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Miracle.FileZilla.Api")]
-[assembly: AssemblyDescription("Managed api for FileZilla FTP server. Primarily for automated user/group management.")]
+[assembly: AssemblyDescription("Managed api for FileZilla FTP server. Primarily for automated user/group management, but all functionallity in the FileZilla Server interface is supported.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Philip Hoppe")]
 [assembly: AssemblyProduct("Miracle.FileZilla.Api")]
