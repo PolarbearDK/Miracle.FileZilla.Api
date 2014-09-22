@@ -1,9 +1,19 @@
 Miracle.FileZilla.Api
 =====================
 
-Managed api for FileZilla FTP server. Primarily for automated user/group creation and deletion.
+Managed api for FileZilla FTP server. Allows you to do basically the same as the FileZilla Server interface.
+Target audience is everyone who wants to automate the administration of FileZilla server, particularly user/group management.
 
-##Create user in 5 easy steps:
+##Features
+* Get/Set Groups/Users using GetAccountSettings/SetAccountSettings
+* Get/Set server state using GetServerState/SetServerState
+* Get/Set server settings GetSettings/SetSettings
+* Get active connections using GetConnections()
+* Kick connection using Kick(connectionId)
+* Ban IP (and kick) using BanIp(connectionId)
+* Use FileZillaServerProtocol for more advanced features.
+
+##Example: Create user in 5 easy steps:
 
 ####1: Create api
 ```csharp
@@ -20,7 +30,7 @@ var fileZillaApi = new FileZillaApi(IPAddress.Parse("192.168.0.42"), 54321);
 fileZillaApi.Connect("FileZilla password");
 ```
 
-####3: Get account settings including all users and groups
+####3: Get account settings which includes all users and groups
 ```csharp
 var accountSettings = fileZillaApi.GetAccountSettings();
 ```
@@ -29,7 +39,7 @@ var accountSettings = fileZillaApi.GetAccountSettings();
 ```csharp
 var user = new User
 {
-	GroupName = "SomeGroup", // Reference to group
+	GroupName = "SomeGroup", // Reference to existing group
 	UserName = "NewUser",
 	Password = User.HashPassword("secret"),
 	Permissions = new List<Permission>()
@@ -49,7 +59,7 @@ fileZillaApi.SetAccountSettings(accountSettings);
 
 ##Complete example:
 ```csharp
-using (var fileZillaApi = new FileZillaApi())
+using (IFileZillaApi fileZillaApi = new FileZillaApi())
 {
     // Optionally set buffer size
     fileZillaApi.BufferSize = 100*1024*1024;
@@ -57,7 +67,7 @@ using (var fileZillaApi = new FileZillaApi())
     var accountSettings = fileZillaApi.GetAccountSettings();
     var user = new User
     {
-        GroupName = "SomeGroup", // Reference to group
+        GroupName = "SomeGroup", // Reference to existing group
         UserName = "NewUser",
         Password = User.HashPassword("secret"),
         Permissions = new List<Permission>()
@@ -72,15 +82,10 @@ using (var fileZillaApi = new FileZillaApi())
     fileZillaApi.SetAccountSettings(accountSettings);
 }
 ```
+
+Groups are managed just like Users using accountSettings.Groups.
+
 ####See sample project for further information.
-
-##Other features
-* Get server state using GetServerState()
-* Get current connections using GetConnections()
-* Kick connection using Kick(connectionId)
-* Ban IP (and kick) using BanIp(connectionId)
-
-
 
 ##Note! 
 * If you handle a lot of users, you will need to increase the size of the input buffer (BufferSize property)
