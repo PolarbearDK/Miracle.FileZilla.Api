@@ -68,6 +68,8 @@ namespace Miracle.FileZilla.Api
         AUTOBAN_BANTIME = 58,
         SERVICE_NAME = 59,
         SERVICE_DISPLAY_NAME = 60,
+
+        OPTIONS_NUM = 60
 #pragma warning restore 1591
         // ReSharper restore InconsistentNaming
     }

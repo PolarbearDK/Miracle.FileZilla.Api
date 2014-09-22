@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Miracle.FileZilla.Api
 {
@@ -44,7 +45,14 @@ namespace Miracle.FileZilla.Api
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Serialize(BinaryWriter writer, int protocolVersion)
         {
+            // Check Uniqueness of groups
+            if(Groups.GroupBy(x=>x.GroupName).Any(x => x.Count() > 1))
+                throw new ApiException("Group names must be unique");
             writer.WriteList(Groups, protocolVersion);
+
+            // Check Uniqueness of users
+            if (Users.GroupBy(x => x.UserName).Any(x => x.Count() > 1))
+                throw new ApiException("User names must be unique");
             writer.WriteList(Users, protocolVersion);
         }
     }

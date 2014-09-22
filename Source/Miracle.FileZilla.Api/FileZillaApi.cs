@@ -63,8 +63,13 @@ namespace Miracle.FileZilla.Api
         /// <returns>True if Success</returns>
         public bool SetSettings(Settings settings)
         {
-            // Password get special treatment. If password is null, then set it to invalid (*).
-            // That way we can distinguish between 
+            // Check options
+            if(settings.Options.Count != (int)OptionId.OPTIONS_NUM)
+                throw new ApiException("Bad option count");
+            
+            // Before serializing, give Admin Password option special treatment. 
+            // If password is null, then set it to invalid ("*").
+            // That way server can distinguish between 
             //   - Not set (Null, serialized as "*")
             //   - Blank password ("")
             //   - Actual password
