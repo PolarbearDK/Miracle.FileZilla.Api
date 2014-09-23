@@ -88,5 +88,5 @@ Groups are managed just like Users using accountSettings.Groups.
 ####See sample project for further information.
 
 ##Note! 
-* If you handle a lot of users, you will need to increase the size of the input buffer (BufferSize property)
+* If you handle a lot of users, you will need to increase the size of the input buffer (BufferSize property), otherwise an ApiException is thrown.
 * Miracle.FileZilla.Api was developed using FileZilla Server version 0.9.46 beta for Windows, and is only testet with that version. 
