@@ -15,11 +15,11 @@ namespace Miracle.FileZilla.Api
         /// <summary>
         /// Versions used to develop this API
         /// </summary>
-        public const int DevelopmentServerVersion = 0x00094600;
-        /// <summary>
-        /// Versions used to develop this API
-        /// </summary>
-        public const int DevelopmentProtocolVersion = 0x00010F00;
+        public readonly int[] SupportedProtocolVersions =
+        {
+            ProtocolVersions.Initial,
+            ProtocolVersions.User16M
+        };
         /// <summary>
         /// Defailt IP
         /// </summary>
@@ -193,7 +193,8 @@ namespace Miracle.FileZilla.Api
         /// Connect to FileZilla admin interface 
         /// </summary>
         /// <param name="password">FileZilla admin password</param>
-        public void Connect(string password)
+        /// <param name="checkSupportedVersion">Flag indicating if the FileZilla Server versions must match a protocol version supported by the API</param>
+        public void Connect(string password, bool checkSupportedVersion = true)
         {
             Authentication authentication = null;
             Connect();
@@ -201,8 +202,16 @@ namespace Miracle.FileZilla.Api
             Receive(reader =>
             {
                 reader.Verify("FZS");
+
                 ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
                 ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
+
+                if (checkSupportedVersion)
+                {
+                    if (!SupportedProtocolVersions.Contains(ProtocolVersion))
+                        throw new ApiException(string.Format("Unsupported FileZilla protocol version:{0}. Connect using checkSupportedVersion=false to ignore or report issue on https://github.com/PolarbearDK/Miracle.FileZilla.Api fix permanently.", FormatVersion(ProtocolVersion)));
+                }
+
                 authentication = reader.Read<Authentication>(ProtocolVersion);
             });
 
@@ -211,6 +220,15 @@ namespace Miracle.FileZilla.Api
                 SendCommand(MessageType.Authenticate, authentication.HashPassword(password));
                 Receive(MessageType.Authenticate);
             }
+        }
+
+        private string FormatVersion(int serverVersion)
+        {
+            return string.Format("{0:X}.{1:X}.{2:X}.{3:X}",
+                (serverVersion >> 24) & 0xFF,
+                (serverVersion >> 16) & 0xFF,
+                (serverVersion >> 8) & 0xFF,
+                (serverVersion >> 0) & 0xFF);
         }
     }
 }

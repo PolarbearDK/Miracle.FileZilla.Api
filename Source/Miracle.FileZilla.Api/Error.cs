@@ -5,12 +5,13 @@ namespace Miracle.FileZilla.Api
 {
     internal class Error: IBinarySerializable
     {
-        public string ErrorMessage { get; set; }
+        public bool IsError { get; set; }
+        public string Message { get; set; }
 
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            reader.Verify((byte)1);
-            ErrorMessage = reader.ReadText();
+            IsError = reader.ReadBoolean();
+            Message = reader.ReadText();
         }
 
         public void Serialize(BinaryWriter writer, int protocolVersion)

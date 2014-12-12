@@ -36,9 +36,9 @@ namespace Miracle.FileZilla.Api
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            Options = reader.ReadList<Option>(protocolVersion);
-            DownloadSpeedLimitRule = reader.ReadList<SpeedLimitRule>(protocolVersion);
-            UploadSpeedLimitRule = reader.ReadList<SpeedLimitRule>(protocolVersion);
+            Options = reader.ReadList16<Option>(protocolVersion);
+            DownloadSpeedLimitRule = reader.ReadList16<SpeedLimitRule>(protocolVersion);
+            UploadSpeedLimitRule = reader.ReadList16<SpeedLimitRule>(protocolVersion);
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace Miracle.FileZilla.Api
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Serialize(BinaryWriter writer, int protocolVersion)
         {
-            writer.WriteList(Options, protocolVersion);
-            writer.WriteList(DownloadSpeedLimitRule, protocolVersion);
-            writer.WriteList(UploadSpeedLimitRule, protocolVersion);
+            writer.WriteList16(Options, protocolVersion);
+            writer.WriteList16(DownloadSpeedLimitRule, protocolVersion);
+            writer.WriteList16(UploadSpeedLimitRule, protocolVersion);
         }
 
         /// <summary>

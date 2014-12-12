@@ -112,7 +112,7 @@ namespace Miracle.FileZilla.Api
             DisallowedIPs = reader.ReadTextList();
             AllowedIPs = reader.ReadTextList();
             EightPlusThree = reader.ReadBoolean();
-            SharedFolders = reader.ReadList<SharedFolder>(protocolVersion);
+            SharedFolders = reader.ReadList16<SharedFolder>(protocolVersion);
             DownloadSpeedLimit = reader.Read<SpeedLimit>(protocolVersion);
             UploadSpeedLimit = reader.Read<SpeedLimit>(protocolVersion);
             Comment = reader.ReadText();
@@ -134,7 +134,7 @@ namespace Miracle.FileZilla.Api
             writer.WriteTextList(DisallowedIPs);
             writer.WriteTextList(AllowedIPs);
             writer.Write(EightPlusThree);
-            writer.WriteList(SharedFolders, protocolVersion);
+            writer.WriteList16(SharedFolders, protocolVersion);
             writer.Write(DownloadSpeedLimit, protocolVersion);
             writer.Write(UploadSpeedLimit, protocolVersion);
             writer.WriteText(Comment);

@@ -34,8 +34,12 @@ namespace Miracle.FileZilla.Api
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            Groups = reader.ReadList<Group>(protocolVersion);
-            Users = reader.ReadList<User>(protocolVersion);
+            Groups = protocolVersion < ProtocolVersions.User16M
+                ? reader.ReadList16<Group>(protocolVersion)
+                : reader.ReadList24<Group>(protocolVersion);
+            Users = protocolVersion < ProtocolVersions.User16M
+                ? reader.ReadList16<User>(protocolVersion)
+                : reader.ReadList24<User>(protocolVersion);
         }
 
         /// <summary>
@@ -48,12 +52,20 @@ namespace Miracle.FileZilla.Api
             // Check Uniqueness of groups
             if(Groups.GroupBy(x=>x.GroupName).Any(x => x.Count() > 1))
                 throw new ApiException("Group names must be unique");
-            writer.WriteList(Groups, protocolVersion);
+
+            if(protocolVersion < ProtocolVersions.User16M)
+                writer.WriteList16(Groups, protocolVersion);
+            else
+                writer.WriteList24(Groups, protocolVersion);
 
             // Check Uniqueness of users
             if (Users.GroupBy(x => x.UserName).Any(x => x.Count() > 1))
                 throw new ApiException("User names must be unique");
-            writer.WriteList(Users, protocolVersion);
+
+            if (protocolVersion < ProtocolVersions.User16M)
+                writer.WriteList16(Users, protocolVersion);
+            else
+                writer.WriteList24(Users, protocolVersion);
         }
     }
 }

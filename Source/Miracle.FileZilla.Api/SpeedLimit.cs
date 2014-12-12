@@ -61,7 +61,7 @@ namespace Miracle.FileZilla.Api
             SpeedLimitType = (SpeedLimitType)(options & 0x3);
             BypassServerSpeedLimit = (TriState)(options >> 2);
             ConstantSpeedLimit = reader.ReadBigEndianInt16();
-            SpeedLimitRules = reader.ReadList<SpeedLimitRule>(protocolVersion);
+            SpeedLimitRules = reader.ReadList16<SpeedLimitRule>(protocolVersion);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Miracle.FileZilla.Api
             var options = (byte)(((byte)SpeedLimitType & 0x3) | ((byte)BypassServerSpeedLimit << 2));
             writer.Write(options);
             writer.WriteBigEndianInt16(ConstantSpeedLimit);
-            writer.WriteList(SpeedLimitRules, protocolVersion);
+            writer.WriteList16(SpeedLimitRules, protocolVersion);
         }
     }
 }

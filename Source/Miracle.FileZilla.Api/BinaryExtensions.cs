@@ -107,9 +107,20 @@ namespace Miracle.FileZilla.Api
             item.Serialize(writer, protocolVersion);
         }
 
-        public static List<T> ReadList<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
+        public static List<T> ReadList16<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
         {
             int length = reader.ReadBigEndianInt16();
+            var list = new List<T>();
+            for (int i = 0; i < length; i++)
+            {
+                list.Add(reader.Read<T>(protocolVersion));
+            }
+            return list;
+        }
+
+        public static List<T> ReadList24<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
+        {
+            int length = reader.ReadBigEndianInt24();
             var list = new List<T>();
             for (int i = 0; i < length; i++)
             {
@@ -129,12 +140,25 @@ namespace Miracle.FileZilla.Api
             return list.ToArray();
         }
 
-        public static void WriteList<T>(this BinaryWriter writer, IList<T> list, int protocolVersion) where T : IBinarySerializable
+        public static void WriteList16<T>(this BinaryWriter writer, IList<T> list, int protocolVersion) where T : IBinarySerializable
         {
-            if(list.Count > ushort.MaxValue)
-                throw new ApiException(string.Format("Lists of more than {0} elements is not supported by the FileZilla API.", ushort.MaxValue));
+            if (list.Count > ushort.MaxValue)
+                throw new ApiException(string.Format("Lists of more than {0} elements is not supported by this version of FileZilla protocol.", ushort.MaxValue));
 
             writer.WriteBigEndianInt16((ushort)list.Count);
+            foreach (var item in list)
+            {
+                writer.Write(item, protocolVersion);
+            }
+        }
+
+        public static void WriteList24<T>(this BinaryWriter writer, IList<T> list, int protocolVersion) where T : IBinarySerializable
+        {
+            var max = ushort.MaxValue*256;
+            if (list.Count > max)
+                throw new ApiException(string.Format("Lists of more than {0} elements is not supported by FileZilla protocol.", max));
+
+            writer.WriteBigEndianInt24(list.Count);
             foreach (var item in list)
             {
                 writer.Write(item, protocolVersion);

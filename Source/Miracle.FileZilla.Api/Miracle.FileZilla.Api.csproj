@@ -47,6 +47,7 @@
     <Compile Include="OptionId.cs" />
     <Compile Include="OptionInfo.cs" />
     <Compile Include="OptionType.cs" />
+    <Compile Include="ProtocolVersions.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Transfer.cs" />
     <Compile Include="TransferInfo.cs" />

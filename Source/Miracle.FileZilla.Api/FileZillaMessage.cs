@@ -68,7 +68,7 @@ namespace Miracle.FileZilla.Api
                             switch (userControl)
                             {
                                 case UserControl.GetList:
-                                    return data.Read(reader => reader.ReadList<Connection>(protocolVersion));
+                                    return data.Read(reader => reader.ReadList16<Connection>(protocolVersion));
                                 case UserControl.ConnOp:
                                     var connOpType = (ConnOp)data[0];
                                     data = data.Skip(1).ToArray();

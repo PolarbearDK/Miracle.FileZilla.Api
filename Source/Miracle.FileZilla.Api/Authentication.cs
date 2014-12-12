@@ -21,15 +21,20 @@ namespace Miracle.FileZilla.Api
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
-            NoPasswordRequired = reader.ReadBoolean();
-            reader.ReadLength(
-                reader.ReadInt32(),
-                r2 =>
-                {
-                    _nonce1 = r2.ReadArray(r3 => r3.ReadByte());
-                    _nonce2 = r2.ReadArray(r3 => r3.ReadByte());
-                    return true;
-                });
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                NoPasswordRequired = reader.ReadBoolean();
+                reader.ReadLength(
+                    reader.ReadInt32(),
+                    r2 =>
+                    {
+                        _nonce1 = r2.ReadArray(r3 => r3.ReadByte());
+                        _nonce2 = r2.ReadArray(r3 => r3.ReadByte());
+                        return true;
+                    });
+            }
+            else
+                NoPasswordRequired = true;
         }
 
         public void Serialize(BinaryWriter writer, int protocolVersion)
