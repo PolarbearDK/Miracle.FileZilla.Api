@@ -13,6 +13,11 @@ Target audience is everyone who wants to automate the administration of FileZill
 * Ban IP (and kick) using BanIp method.
 * Use FileZillaServerProtocol for more advanced implemetations.
 
+##FileZIlla Server versions supported
+* 0.9.46 - First version supported
+* 0.9.47 (Not recommended)
+* 0.9.48 - Recommended version
+
 ##Example: Create user in 5 easy steps:
 
 ####1: Create api

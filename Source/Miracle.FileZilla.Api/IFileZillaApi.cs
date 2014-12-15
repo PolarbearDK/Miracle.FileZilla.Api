@@ -12,8 +12,7 @@ namespace Miracle.FileZilla.Api
         /// Connect to FileZilla admin console 
         /// </summary>
         /// <param name="password">FileZilla admin password</param>
-        /// <param name="checkSupportedVersion">Flag indicating if the FileZilla Server versions must match a protocol version supported by the API</param>
-        void Connect(string password, bool checkSupportedVersion = true);
+        void Connect(string password);
         
         /// <summary>
         /// Get state of FileZilla server

@@ -11,11 +11,12 @@ namespace Miracle.FileZilla.Api.Samples
     internal class Program
     {
         private const string Ip = "127.0.0.1";
-        private const int Port = 14242;
+        private const int Port = 14147;
         private const string ServerPassword = "master";
         private const int MaxGroups = 1000;
         private const string GroupName = "MachineGroup";
-        private const int MaxUsers = 10000;
+        private const int MaxUsers16M = 100000;
+        private const int MaxUsers64K = 10000; 
         private const string UserName = "MachineUser";
 
         private static void Main(string[] args)
@@ -287,7 +288,7 @@ namespace Miracle.FileZilla.Api.Samples
                 accountSettings.Groups.RemoveAll(x => x.GroupName.StartsWith(GroupName));
                 accountSettings.Users.RemoveAll(x => x.UserName.StartsWith(UserName));
 
-                for (int i = 0; i < MaxGroups; i++)
+                for (var i = 0; i < MaxGroups; i++)
                 {
                     var group = new Group()
                     {
@@ -305,7 +306,8 @@ namespace Miracle.FileZilla.Api.Samples
                     accountSettings.Groups.Add(group);
                 }
 
-                for (int i = 0; i < MaxUsers; i++)
+                var maxUsers = fileZillaApi.ProtocolVersion < ProtocolVersions.User16M ? MaxUsers64K : MaxUsers16M;
+                for (var i = 0; i < maxUsers; i++)
                 {
                     var user = new User
                     {
@@ -326,7 +328,7 @@ namespace Miracle.FileZilla.Api.Samples
 
                 Console.WriteLine("Created {0} groups and {1} users in {2}.",
                     MaxGroups,
-                    MaxUsers,
+                    maxUsers,
                     stopWatch.GetDelta());
 
                 fileZillaApi.SetAccountSettings(accountSettings);

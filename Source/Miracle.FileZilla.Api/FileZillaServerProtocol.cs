@@ -193,8 +193,7 @@ namespace Miracle.FileZilla.Api
         /// Connect to FileZilla admin interface 
         /// </summary>
         /// <param name="password">FileZilla admin password</param>
-        /// <param name="checkSupportedVersion">Flag indicating if the FileZilla Server versions must match a protocol version supported by the API</param>
-        public void Connect(string password, bool checkSupportedVersion = true)
+        public void Connect(string password)
         {
             Authentication authentication = null;
             Connect();
@@ -206,10 +205,13 @@ namespace Miracle.FileZilla.Api
                 ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
                 ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
 
-                if (checkSupportedVersion)
+                // Verify protocol version 
+                if (!SupportedProtocolVersions.Contains(ProtocolVersion))
                 {
-                    if (!SupportedProtocolVersions.Contains(ProtocolVersion))
-                        throw new ApiException(string.Format("Unsupported FileZilla protocol version:{0}. Connect using checkSupportedVersion=false to ignore or report issue on https://github.com/PolarbearDK/Miracle.FileZilla.Api fix permanently.", FormatVersion(ProtocolVersion)));
+                    if(ProtocolVersion < ProtocolVersions.Initial)
+                        throw new ApiException(string.Format("FileZilla server is too old. Install FileZilla Server 0.9.46 or later"));
+
+                    throw new ApiException(string.Format("Unsupported FileZilla protocol version:{0}. Report issue on https://github.com/PolarbearDK/Miracle.FileZilla.Api.", FormatVersion(ProtocolVersion)));
                 }
 
                 authentication = reader.Read<Authentication>(ProtocolVersion);
