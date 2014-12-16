@@ -174,12 +174,20 @@ namespace Miracle.FileZilla.Api
         {
             var data = Receive();
             var list = new List<FileZillaMessage>();
-            using (var reader = new BinaryReader(new MemoryStream(data)))
+            var memoryStream = new MemoryStream();
+            memoryStream.Append(data);
+            using (var reader = new BinaryReader(memoryStream))
             {
-                while (reader.BaseStream.Position < data.Length)
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
                     var b = reader.ReadByte();
                     var count = reader.ReadInt32();
+
+                    while ((reader.BaseStream.Length - reader.BaseStream.Position) < count)
+                    {
+                        var buffer = Receive();
+                        memoryStream.Append(buffer);
+                    }
 
                     byte[] payload = reader.ReadBytes(count);
                     var message = new FileZillaMessage((MessageOrigin)(b & 0x3), (MessageType)(b >> 2), payload, ProtocolVersion);

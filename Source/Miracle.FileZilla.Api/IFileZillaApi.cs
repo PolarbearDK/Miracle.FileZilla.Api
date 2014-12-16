@@ -81,10 +81,6 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         int ProtocolVersion { get; }
         /// <summary>
-        /// The size of the receiving buffer. If this is too small, then returning data from server is discarded, and an exception is thrown.   
-        /// </summary>
-        int BufferSize { get; set; }
-        /// <summary>
         /// Check if socket is connected
         /// </summary>
         bool IsConnected { get; }

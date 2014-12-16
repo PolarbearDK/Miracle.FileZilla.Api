@@ -36,6 +36,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MemoryStreamExtensions.cs" />
     <Compile Include="ConnOp.cs" />
     <Compile Include="ConnectionAdded.cs" />
     <Compile Include="ConnectionRemoved.cs" />

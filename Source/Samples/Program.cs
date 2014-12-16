@@ -187,8 +187,6 @@ namespace Miracle.FileZilla.Api.Samples
             {
                 var stopWatch = Stopwatch2.StartNew();
 
-                fileZillaApi.BufferSize = 100 * 1024 * 1024;
-
                 fileZillaApi.Connect(ServerPassword);
                 var serverState = fileZillaApi.GetServerState();
                 Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
@@ -246,8 +244,6 @@ namespace Miracle.FileZilla.Api.Samples
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
-                fileZillaApi.BufferSize = 100 * 1024 * 1024;
-
                 var stopWatch = Stopwatch2.StartNew();
 
                 fileZillaApi.Connect(ServerPassword);
@@ -272,8 +268,6 @@ namespace Miracle.FileZilla.Api.Samples
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
-                fileZillaApi.BufferSize = 100 * 1024 * 1024;
-
                 var stopWatch = Stopwatch2.StartNew();
 
                 fileZillaApi.Connect(ServerPassword);
@@ -341,8 +335,6 @@ namespace Miracle.FileZilla.Api.Samples
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter()})
             {
-                fileZillaApi.BufferSize = 100 * 1024 * 1024;
-
                 var stopWatch = Stopwatch2.StartNew();
 
                 fileZillaApi.Connect(ServerPassword);

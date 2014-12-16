@@ -15,14 +15,10 @@ namespace Miracle.FileZilla.Api
         private readonly IPEndPoint _ipe;
         private Socket _socket;
         /// <summary>
-        /// Default buffer size. Set BufferSize property to override default. 
+        /// Initial buffer size.
         /// </summary>
-        public const int DefaultBufferSize = 10*1024*1024;
+        private const int DefaultBufferSize = ushort.MaxValue;
         byte[] _buffer;
-        private int _bufferSize;
-#if DEBUG
-        private int _maxBufferUsed;
-#endif
 
         /// <summary>
         /// Construct admin socket on specific IP and port.
@@ -33,7 +29,6 @@ namespace Miracle.FileZilla.Api
         {
             _ipe = new IPEndPoint(address, port);
             _socket = new Socket(_ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            BufferSize = DefaultBufferSize;
         }
 
         /// <summary>
@@ -58,25 +53,11 @@ namespace Miracle.FileZilla.Api
         }
 
         /// <summary>
-        /// The size of the receiving buffer. If this is too small, then returning data from server is discarded, and an exception is thrown.   
-        /// </summary>
-        public int BufferSize
-        {
-            get { return _bufferSize; }
-            set
-            {
-                _bufferSize = value;
-                if (IsConnected)
-                    _buffer = new byte[BufferSize];
-            }
-        }
-
-        /// <summary>
         /// Connect socket to endpoint
         /// </summary>
         protected void Connect()
         {
-            _buffer = new byte[BufferSize];
+            _buffer = new byte[DefaultBufferSize];
             _socket.Connect(_ipe);
         }
 
@@ -90,10 +71,6 @@ namespace Miracle.FileZilla.Api
                 _socket.Dispose();
                 _socket = null;
                 _buffer = null;
-#if DEBUG
-                var percent = _maxBufferUsed/(double)_bufferSize*100;
-                Console.WriteLine("Disconnected. A maximum of {0}({1}%) buffer bytes were used.\r\n", _maxBufferUsed, Math.Round(percent,1));
-#endif
             }
         }
 
@@ -128,13 +105,7 @@ namespace Miracle.FileZilla.Api
         {
             if (!IsConnected) throw new ApiException("Not connected");
 
-           int bytesRec = _socket.Receive(_buffer);
-#if DEBUG
-            _maxBufferUsed = Math.Max(_maxBufferUsed,bytesRec);
-#endif
-
-            if(bytesRec == BufferSize)
-                throw new ApiException("Buffer too small. Increase BufferSize parameter");
+            int bytesRec = _socket.Receive(_buffer, 0, _buffer.Length, SocketFlags.None);
             var data = _buffer.Take(bytesRec).ToArray();
             LogData("Receive", data);
             return data;
