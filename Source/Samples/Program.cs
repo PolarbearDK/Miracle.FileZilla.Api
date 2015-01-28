@@ -16,7 +16,7 @@ namespace Miracle.FileZilla.Api.Samples
         private const int MaxGroups = 1000;
         private const string GroupName = "MachineGroup";
         private const int MaxUsers16M = 100000;
-        private const int MaxUsers64K = 10000; 
+        private const int MaxUsers64K = 10000;
         private const string UserName = "MachineUser";
 
         private static void Main(string[] args)
@@ -125,14 +125,14 @@ namespace Miracle.FileZilla.Api.Samples
                 var settings2 = fileZillaApi.GetSettings();
 
                 // Verify 
-                if(settings.Options.Count() != settings2.Options.Count()) throw new Exception("Uh uh");
+                if (settings.Options.Count() != settings2.Options.Count()) throw new Exception("Uh uh");
                 for (int i = 0; i < settings.Options.Count(); i++)
                 {
-                    if(settings.Options[i].OptionType != Option.OptionInfos[i].OptionType) throw new Exception("Uh uh");
-                    if(settings.Options[i].OptionType != settings2.Options[i].OptionType) throw new Exception("Uh uh");
-                    if(settings.Options[i].NumericValue != settings2.Options[i].NumericValue) throw new Exception("Uh uh");
+                    if (settings.Options[i].OptionType != Option.OptionInfos[i].OptionType) throw new Exception("Uh uh");
+                    if (settings.Options[i].OptionType != settings2.Options[i].OptionType) throw new Exception("Uh uh");
+                    if (settings.Options[i].NumericValue != settings2.Options[i].NumericValue) throw new Exception("Uh uh");
                     // Password is sent as "*" when not set
-                    if(settings.Options[i].TextValue != settings2.Options[i].TextValue && !(settings.Options[i].TextValue == "*" && settings2.Options[i].TextValue == null)) throw new Exception("Uh uh");
+                    if (settings.Options[i].TextValue != settings2.Options[i].TextValue && !(settings.Options[i].TextValue == "*" && settings2.Options[i].TextValue == null)) throw new Exception("Uh uh");
                 }
 
                 // Restore 
@@ -206,8 +206,18 @@ namespace Miracle.FileZilla.Api.Samples
                         {
                             Directory = @"C:\Group\Shared",
                             AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.IsHome
-                        }
+                        },
+                             new SharedFolder()
+                        {
+                            Directory = @"C:\foo\bar",
+                            AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead
+}
                     },
+                    AllowedIPs = new List<string>() { "127.0.0.1", "10.10.10.10", "42.42.42.42", "::1" },
+                    DisallowedIPs = new List<string>() { "172.0.0.0" },
+                    ForceSsl = true,
+                    Comment = "The quick brown fox jumps over the lazy dog",
+                    BypassUserLimit = TriState.Default,
                 };
                 accountSettings.Groups.RemoveAll(x => x.GroupName == GroupName);
                 accountSettings.Groups.Add(@group);
@@ -223,8 +233,13 @@ namespace Miracle.FileZilla.Api.Samples
                         {
                             Directory = @"C:\Hello\World",
                             AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.IsHome
+                        },
+                        new SharedFolder()
+                        {
+                            Directory = @"C:\foo\bar",
+                            AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead
                         }
-                    },
+                    }
                 };
                 accountSettings.Users.RemoveAll(x => x.UserName == UserName);
                 accountSettings.Users.Add(user);
@@ -333,7 +348,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void DeleteLotsOfUsersAndGroups()
         {
             Console.WriteLine(MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter()})
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
