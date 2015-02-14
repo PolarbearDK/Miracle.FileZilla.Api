@@ -217,7 +217,7 @@ namespace Miracle.FileZilla.Api.Samples
                     DisallowedIPs = new List<string>() { "172.0.0.0" },
                     ForceSsl = true,
                     Comment = "The quick brown fox jumps over the lazy dog",
-                    BypassUserLimit = TriState.Default,
+                    BypassUserLimit = TriState.No,
                 };
                 accountSettings.Groups.RemoveAll(x => x.GroupName == GroupName);
                 accountSettings.Groups.Add(@group);

@@ -208,7 +208,14 @@ namespace Miracle.FileZilla.Api
 
             Receive(reader =>
             {
-                reader.Verify("FZS");
+                try
+                {
+                    reader.Verify("FZS");
+                }
+                catch (ProtocolException ex)
+                {
+                    throw new ApiException("That's not a FileZilla server listening on that port.", ex);
+                }
 
                 ServerVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());
                 ProtocolVersion = reader.ReadLength(reader.ReadBigEndianInt16(), x => x.ReadInt32());

@@ -9,9 +9,8 @@
 		<projectUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
-		<releaseNotes>Fix socket bug (partial read) causing EndOfStreamException.
-Eliminate BufferSize property.</releaseNotes>
-		<copyright>Copyright 2014</copyright>
+		<releaseNotes>Better exception message when connecting to wrong server and/or port.</releaseNotes>
+		<copyright>Copyright 2014-2015</copyright>
 		<tags>FileZilla FTP server api create user users group groups setting settings automated</tags>
 	</metadata>
 </package>
