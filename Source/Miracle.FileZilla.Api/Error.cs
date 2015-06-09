@@ -11,7 +11,7 @@ namespace Miracle.FileZilla.Api
         public void Deserialize(BinaryReader reader, int protocolVersion)
         {
             IsError = reader.ReadBoolean();
-            Message = reader.ReadText();
+            Message = reader.ReadRemainingAsText();
         }
 
         public void Serialize(BinaryWriter writer, int protocolVersion)
