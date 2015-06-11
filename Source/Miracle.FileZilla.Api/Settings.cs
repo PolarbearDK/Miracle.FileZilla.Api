@@ -34,7 +34,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Deserialize(BinaryReader reader, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion, int index)
         {
             Options = reader.ReadList16<Option>(protocolVersion);
             DownloadSpeedLimitRule = reader.ReadList16<SpeedLimitRule>(protocolVersion);
@@ -46,7 +47,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Serialize(BinaryWriter writer, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Serialize(BinaryWriter writer, int protocolVersion, int index = 0)
         {
             writer.WriteList16(Options, protocolVersion);
             writer.WriteList16(DownloadSpeedLimitRule, protocolVersion);
@@ -54,11 +56,21 @@ namespace Miracle.FileZilla.Api
         }
 
         /// <summary>
-        /// Get 
+        /// Get Option from OPtionId enumeration 
         /// </summary>
         /// <param name="optionId"></param>
         /// <returns></returns>
-        public Option GetOption(OptionId optionId)
+        public Option GetOption(OptionIdPreV12 optionId)
+        {
+           return Options[(int)optionId -1]; // Off by one
+        }
+
+        /// <summary>
+        /// Get Option from OPtionId enumeration 
+        /// </summary>
+        /// <param name="optionId"></param>
+        /// <returns></returns>
+        public Option GetOption(OptionIdPostV11 optionId)
         {
            return Options[(int)optionId -1]; // Off by one
         }

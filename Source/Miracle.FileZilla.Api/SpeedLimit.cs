@@ -55,7 +55,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Deserialize(BinaryReader reader, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion, int index)
         {
             var options = reader.ReadByte();
             SpeedLimitType = (SpeedLimitType)(options & 0x3);
@@ -69,7 +70,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Serialize(BinaryWriter writer, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Serialize(BinaryWriter writer, int protocolVersion, int index)
         {
             var options = (byte)(((byte)SpeedLimitType & 0x3) | ((byte)BypassServerSpeedLimit << 2));
             writer.Write(options);

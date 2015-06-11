@@ -26,7 +26,7 @@ namespace Miracle.FileZilla.Api.Test
             var memoryStream = new MemoryStream();
             using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8))
             {
-                source.Serialize(writer, ProtocolVersion);
+                source.Serialize(writer, ProtocolVersion, 0);
             }
             byte[] data = memoryStream.ToArray();
             

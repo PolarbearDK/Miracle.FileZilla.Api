@@ -26,7 +26,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Deserialize(BinaryReader reader, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion, int index)
         {
             ConnectionId = reader.ReadInt32();
             Ip = reader.ReadText();
@@ -38,7 +39,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Serialize(BinaryWriter writer, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Serialize(BinaryWriter writer, int protocolVersion, int index)
         {
             throw new NotImplementedException();
         }

@@ -30,9 +30,10 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public override void Deserialize(BinaryReader reader, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public override void Deserialize(BinaryReader reader, int protocolVersion, int index)
         {
-            base.Deserialize(reader, protocolVersion);
+            base.Deserialize(reader, protocolVersion, index);
             UserName = reader.ReadText();
             Password = reader.ReadText();
         }
@@ -42,9 +43,10 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public override void Serialize(BinaryWriter writer, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public override void Serialize(BinaryWriter writer, int protocolVersion, int index)
         {
-            base.Serialize(writer, protocolVersion);
+            base.Serialize(writer, protocolVersion, index);
             writer.WriteText(UserName);
             writer.WriteText(Password);
         }

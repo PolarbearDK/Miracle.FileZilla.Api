@@ -13,5 +13,9 @@ namespace Miracle.FileZilla.Api
         /// First version supporting 16M users
         /// </summary>
         public const int User16M = 0x00011000; // Server version 0x00094800
+        /// <summary>
+        /// Protocol changes mostly related to TLS
+        /// </summary>
+        public const int TLS = 0x00012000; // Server version 0x00095100
     }
 }

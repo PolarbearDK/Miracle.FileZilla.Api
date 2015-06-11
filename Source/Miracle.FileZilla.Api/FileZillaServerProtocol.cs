@@ -18,7 +18,8 @@ namespace Miracle.FileZilla.Api
         public readonly int[] SupportedProtocolVersions =
         {
             ProtocolVersions.Initial,
-            ProtocolVersions.User16M
+            ProtocolVersions.User16M,
+            ProtocolVersions.TLS
         };
         /// <summary>
         /// Defailt IP
@@ -235,8 +236,8 @@ namespace Miracle.FileZilla.Api
             if (!authentication.NoPasswordRequired)
             {
                 SendCommand(MessageType.Authenticate, authentication.HashPassword(password));
-                Receive(MessageType.Authenticate);
             }
+            Receive(MessageType.Authenticate);
         }
 
         private string FormatVersion(int serverVersion)

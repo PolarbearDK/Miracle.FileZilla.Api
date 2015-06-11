@@ -42,7 +42,7 @@ namespace Miracle.FileZilla.Api
             var b2 = reader.ReadByte();
             var b3 = reader.ReadByte();
             var b4 = reader.ReadByte();
-            return (uint) (
+            return (uint)(
                 b1 << 24 |
                 b2 << 16 |
                 b3 << 8 |
@@ -64,24 +64,24 @@ namespace Miracle.FileZilla.Api
             {
                 while (reader.BaseStream.Position != data.Length)
                 {
-                    list.Add(reader.Read<T>(protocolVersion));
+                    list.Add(reader.Read<T>(protocolVersion, list.Count));
                 }
             }
             return list.ToArray();
 
         }
 
-        public static T Read<T>(this byte[] data, int protocolVersion) where T : IBinarySerializable, new()
+        public static T Read<T>(this byte[] data, int protocolVersion, int index = 0) where T : IBinarySerializable, new()
         {
             return data.Read(reader =>
             {
                 var item = new T();
-                item.Deserialize(reader, protocolVersion);
+                item.Deserialize(reader, protocolVersion, index);
                 return item;
             });
         }
 
-        public static T Read<T>(this byte[] data, Func<BinaryReader,T> func)
+        public static T Read<T>(this byte[] data, Func<BinaryReader, T> func)
         {
             using (var reader = new BinaryReader(new MemoryStream(data)))
             {
@@ -92,19 +92,19 @@ namespace Miracle.FileZilla.Api
             }
         }
 
-        public static T Read<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
+        public static T Read<T>(this BinaryReader reader, int protocolVersion, int index = 0) where T : IBinarySerializable, new()
         {
             var item = new T();
-            item.Deserialize(reader, protocolVersion);
+            item.Deserialize(reader, protocolVersion, index);
             return item;
         }
 
-        public static void Write<T>(this BinaryWriter writer, T item, int protocolVersion) where T : IBinarySerializable
+        public static void Write<T>(this BinaryWriter writer, T item, int protocolVersion, int index = 0) where T : IBinarySerializable
         {
-            if(item.GetType() != typeof(T))
+            if (item.GetType() != typeof(T))
                 throw new ApiException(string.Format("Attempt to serialize type {0} as type {1}.", item.GetType(), typeof(T)));
 
-            item.Serialize(writer, protocolVersion);
+            item.Serialize(writer, protocolVersion, index);
         }
 
         public static List<T> ReadList16<T>(this BinaryReader reader, int protocolVersion) where T : IBinarySerializable, new()
@@ -113,7 +113,7 @@ namespace Miracle.FileZilla.Api
             var list = new List<T>();
             for (int i = 0; i < length; i++)
             {
-                list.Add(reader.Read<T>(protocolVersion));
+                list.Add(reader.Read<T>(protocolVersion, i));
             }
             return list;
         }
@@ -124,7 +124,7 @@ namespace Miracle.FileZilla.Api
             var list = new List<T>();
             for (int i = 0; i < length; i++)
             {
-                list.Add(reader.Read<T>(protocolVersion));
+                list.Add(reader.Read<T>(protocolVersion, i));
             }
             return list;
         }
@@ -146,22 +146,24 @@ namespace Miracle.FileZilla.Api
                 throw new ApiException(string.Format("Lists of more than {0} elements is not supported by this version of FileZilla protocol.", ushort.MaxValue));
 
             writer.WriteBigEndianInt16((ushort)list.Count);
+            int index = 0;
             foreach (var item in list)
             {
-                writer.Write(item, protocolVersion);
+                writer.Write(item, protocolVersion, index++);
             }
         }
 
         public static void WriteList24<T>(this BinaryWriter writer, IList<T> list, int protocolVersion) where T : IBinarySerializable
         {
-            var max = ushort.MaxValue*256;
+            var max = ushort.MaxValue * 256;
             if (list.Count > max)
                 throw new ApiException(string.Format("Lists of more than {0} elements is not supported by FileZilla protocol.", max));
 
             writer.WriteBigEndianInt24(list.Count);
+            int index = 0;
             foreach (var item in list)
             {
-                writer.Write(item, protocolVersion);
+                writer.Write(item, protocolVersion, index++);
             }
         }
 
@@ -175,7 +177,7 @@ namespace Miracle.FileZilla.Api
 
         public static string ReadRemainingAsText(this BinaryReader reader)
         {
-            byte[] textBytes = reader.ReadBytes((int) (reader.BaseStream.Length-reader.BaseStream.Position));
+            byte[] textBytes = reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position));
             return Encoding.UTF8.GetString(textBytes);
         }
 
@@ -194,7 +196,7 @@ namespace Miracle.FileZilla.Api
             else
             {
                 var data = Encoding.UTF8.GetBytes(text);
-                writer.WriteBigEndianInt24((ushort) data.Length);
+                writer.WriteBigEndianInt24((ushort)data.Length);
                 writer.Write(data);
             }
         }
@@ -206,7 +208,7 @@ namespace Miracle.FileZilla.Api
             else
             {
                 var data = Encoding.UTF8.GetBytes(text);
-                writer.WriteBigEndianInt16((ushort) data.Length);
+                writer.WriteBigEndianInt16((ushort)data.Length);
                 writer.Write(data);
             }
         }
@@ -340,10 +342,10 @@ namespace Miracle.FileZilla.Api
             var actual = reader.ReadByte();
             if (actual != expected)
             {
-                var actualMessageOrigin = (MessageOrigin) (actual & 0x3);
-                var actualMessageType = (MessageType) (actual >> 2);
+                var actualMessageOrigin = (MessageOrigin)(actual & 0x3);
+                var actualMessageType = (MessageType)(actual >> 2);
                 throw new ProtocolException(string.Format("Expected message type/id {0}/{1} actual {2}/{3} at offset {4:x}({4})",
-                    expectedMessageOrigin, expectedMessageType, 
+                    expectedMessageOrigin, expectedMessageType,
                     actualMessageOrigin, actualMessageType,
                     reader.BaseStream.Position - 1));
             }

@@ -101,7 +101,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public virtual void Deserialize(BinaryReader reader, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public virtual void Deserialize(BinaryReader reader, int protocolVersion, int index)
         {
             GroupName = reader.ReadText();
             IpLimit = reader.ReadInt32();
@@ -124,7 +125,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public virtual void Serialize(BinaryWriter writer, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public virtual void Serialize(BinaryWriter writer, int protocolVersion, int index)
         {
             writer.WriteText(GroupName);
             writer.Write(IpLimit);

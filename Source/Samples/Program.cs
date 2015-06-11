@@ -91,7 +91,7 @@ namespace Miracle.FileZilla.Api.Samples
                 foreach (var o in settings.Options)
                 {
                     Console.WriteLine("  {0} = {1}",
-                        Option.OptionInfos[optionNumber].Text,
+                        o.Label,
                         o.OptionType == OptionType.Text
                             ? o.TextValue
                             : o.NumericValue.ToString()
@@ -113,7 +113,7 @@ namespace Miracle.FileZilla.Api.Samples
                 Console.WriteLine("Settings retrieved in {0}.", stopWatch.GetDelta());
 
                 // Select option to modify
-                var option = settings.GetOption(OptionId.WELCOMEMESSAGE);
+                var option = settings.GetOption(OptionIdPreV12.WELCOMEMESSAGE);
 
                 // Modify
                 string originalTextValue = option.TextValue;
@@ -128,7 +128,8 @@ namespace Miracle.FileZilla.Api.Samples
                 if (settings.Options.Count() != settings2.Options.Count()) throw new Exception("Uh uh");
                 for (int i = 0; i < settings.Options.Count(); i++)
                 {
-                    if (settings.Options[i].OptionType != Option.OptionInfos[i].OptionType) throw new Exception("Uh uh");
+                    if (settings.Options[i].Label != settings2.Options[i].Label) throw new Exception("Uh uh");
+                    if (settings.Options[i].NotRemotelyChangeable != settings2.Options[i].NotRemotelyChangeable) throw new Exception("Uh uh");
                     if (settings.Options[i].OptionType != settings2.Options[i].OptionType) throw new Exception("Uh uh");
                     if (settings.Options[i].NumericValue != settings2.Options[i].NumericValue) throw new Exception("Uh uh");
                     // Password is sent as "*" when not set
@@ -136,7 +137,7 @@ namespace Miracle.FileZilla.Api.Samples
                 }
 
                 // Restore 
-                settings.GetOption(OptionId.WELCOMEMESSAGE).TextValue = originalTextValue;
+                settings.GetOption(OptionIdPreV12.WELCOMEMESSAGE).TextValue = originalTextValue;
                 fileZillaApi.SetSettings(settings);
             }
         }

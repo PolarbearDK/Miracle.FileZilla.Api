@@ -32,7 +32,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="reader">Binary reader to read data from</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Deserialize(BinaryReader reader, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Deserialize(BinaryReader reader, int protocolVersion, int index)
         {
             Groups = protocolVersion < ProtocolVersions.User16M
                 ? reader.ReadList16<Group>(protocolVersion)
@@ -47,7 +48,8 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="writer">Binary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void Serialize(BinaryWriter writer, int protocolVersion)
+        /// <param name="index">The 0 based index of this item in relation to any parent list</param>
+        public void Serialize(BinaryWriter writer, int protocolVersion, int index = 0)
         {
             // Check Uniqueness of groups
             if(Groups.GroupBy(x=>x.GroupName).Any(x => x.Count() > 1))

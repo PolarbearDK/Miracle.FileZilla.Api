@@ -6,9 +6,9 @@ namespace Miracle.FileZilla.Api
     public class OptionInfo
     {
         /// <summary>
-        /// Text related to an option
+        /// Label related to an option
         /// </summary>
-        public string Text { get; private set; }
+        public string Label { get; private set; }
         /// <summary>
         /// Type of option
         /// </summary>
@@ -21,12 +21,12 @@ namespace Miracle.FileZilla.Api
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="label"></param>
         /// <param name="type"></param>
         /// <param name="notRemotelyChangeable"></param>
-        internal OptionInfo(string text, int type, bool notRemotelyChangeable)
+        internal OptionInfo(string label, int type, bool notRemotelyChangeable)
         {
-            Text = text;
+            Label = label;
             OptionType = (OptionType)type;
             NotRemotelyChangeable = notRemotelyChangeable;
         }
