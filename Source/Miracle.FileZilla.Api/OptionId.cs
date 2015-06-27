@@ -1,10 +1,11 @@
 namespace Miracle.FileZilla.Api
 {
     /// <summary>
-    /// Option Id up to protocol V11. Se FileZilla documentation for further information.
-    /// Node that numeric value is one greater than Settings.Options list
+    /// Option Id. Se FileZilla documentation for further information.
+    /// Note that numeric value is one greater than Settings.Options list
+    /// Order of elements has been changed as of Protocol V12 (Server version 9.52)
     /// </summary>
-    public enum OptionIdPreV12
+    public enum OptionId
     {
         // ReSharper disable InconsistentNaming
 #pragma warning disable 1591
@@ -13,10 +14,6 @@ namespace Miracle.FileZilla.Api
         MAXUSERS = 3,
         TIMEOUT = 4,
         NOTRANSFERTIMEOUT = 5,
-        INFXP = 6,
-        OUTFXP = 7,
-        NOINFXPSTRICT = 8,
-        NOOUTFXPSTRICT = 9,
         LOGINTIMEOUT = 10,
         LOGSHOWPASS = 11,
         CUSTOMPASVIPTYPE = 12,
@@ -50,15 +47,8 @@ namespace Miracle.FileZilla.Api
         IPFILTER_ALLOWED = 40,
         IPFILTER_DISALLOWED = 41,
         WELCOMEMESSAGE_HIDE = 42,
-        ENABLESSL = 43,
-        ALLOWEXPLICITSSL = 44,
-        SSLKEYFILE = 45,
-        SSLCERTFILE = 46,
-        SSLPORTS = 47,
-        SSLFORCEEXPLICIT = 48,
         BUFFERSIZE2 = 49,
         FORCEPROTP = 50,
-        SSLKEYPASS = 51,
         SHAREDWRITE = 52,
         NOEXTERNALIPONLOCAL = 53,
         ACTIVE_IGNORELOCAL = 54,
@@ -66,83 +56,40 @@ namespace Miracle.FileZilla.Api
         AUTOBAN_ATTEMPTS = 56,
         AUTOBAN_TYPE = 57,
         AUTOBAN_BANTIME = 58,
-        SERVICE_NAME = 59,
-        SERVICE_DISPLAY_NAME = 60,
 
-        OPTIONS_NUM = 60
-#pragma warning restore 1591
-        // ReSharper restore InconsistentNaming
-    }
+        // protocol versions before V12
+        V11_INFXP = 6,
+        V11_OUTFXP = 7,
+        V11_NOINFXPSTRICT = 8,
+        V11_NOOUTFXPSTRICT = 9,
+        V11_ENABLESSL = 43,
+        V11_ALLOWEXPLICITSSL = 44,
+        V11_SSLKEYFILE = 45,
+        V11_SSLCERTFILE = 46,
+        V11_SSLPORTS = 47,
+        V11_SSLFORCEEXPLICIT = 48,
+        V11_SSLKEYPASS = 51,
+        V11_SERVICE_NAME = 59,
+        V11_SERVICE_DISPLAY_NAME = 60,
 
-    /// <summary>
-    /// Option Id for protocol V12. Se FileZilla documentation for further information.
-    /// Node that numeric value is one greater than Settings.Options list
-    /// </summary>
-    public enum OptionIdPostV11
-    {
-        // ReSharper disable InconsistentNaming
-#pragma warning disable 1591
-        OPTION_SERVERPORT = 1,
-        OPTION_THREADNUM = 2,
-        OPTION_MAXUSERS = 3,
-        OPTION_TIMEOUT = 4,
-        OPTION_NOTRANSFERTIMEOUT = 5,
-        OPTION_CHECK_DATA_CONNECTION_IP = 6,
-        OPTION_SERVICE_NAME = 7,
-        OPTION_SERVICE_DISPLAY_NAME = 8,
-        OPTION_TLS_REQUIRE_SESSION_RESUMPTION = 9,
-        OPTION_LOGINTIMEOUT = 10,
-        OPTION_LOGSHOWPASS = 11,
-        OPTION_CUSTOMPASVIPTYPE = 12,
-        OPTION_CUSTOMPASVIP = 13,
-        OPTION_CUSTOMPASVMINPORT = 14,
-        OPTION_CUSTOMPASVMAXPORT = 15,
-        OPTION_WELCOMEMESSAGE = 16,
-        OPTION_ADMINPORT = 17,
-        OPTION_ADMINPASS = 18,
-        OPTION_ADMINIPBINDINGS = 19,
-        OPTION_ADMINIPADDRESSES = 20,
-        OPTION_ENABLELOGGING = 21,
-        OPTION_LOGLIMITSIZE = 22,
-        OPTION_LOGTYPE = 23,
-        OPTION_LOGDELETETIME = 24,
-        OPTION_DISABLE_IPV6 = 25,
-        OPTION_ENABLE_HASH = 26,
-        OPTION_DOWNLOADSPEEDLIMITTYPE = 27,
-        OPTION_UPLOADSPEEDLIMITTYPE = 28,
-        OPTION_DOWNLOADSPEEDLIMIT = 29,
-        OPTION_UPLOADSPEEDLIMIT = 30,
-        OPTION_BUFFERSIZE = 31,
-        OPTION_CUSTOMPASVIPSERVER = 32,
-        OPTION_USECUSTOMPASVPORT = 33,
-        OPTION_MODEZ_USE = 34,
-        OPTION_MODEZ_LEVELMIN = 35,
-        OPTION_MODEZ_LEVELMAX = 36,
-        OPTION_MODEZ_ALLOWLOCAL = 37,
-        OPTION_MODEZ_DISALLOWED_IPS = 38,
-        OPTION_IPBINDINGS = 39,
-        OPTION_IPFILTER_ALLOWED = 40,
-        OPTION_IPFILTER_DISALLOWED = 41,
-        OPTION_WELCOMEMESSAGE_HIDE = 42,
-        OPTION_ENABLETLS = 43,
-        OPTION_ALLOWEXPLICITTLS = 44,
-        OPTION_TLSKEYFILE = 45,
-        OPTION_TLSCERTFILE = 46,
-        OPTION_TLSPORTS = 47,
-        OPTION_TLSFORCEEXPLICIT = 48,
-        OPTION_BUFFERSIZE2 = 49,
-        OPTION_FORCEPROTP = 50,
-        OPTION_TLSKEYPASS = 51,
-        OPTION_SHAREDWRITE = 52,
-        OPTION_NOEXTERNALIPONLOCAL = 53,
-        OPTION_ACTIVE_IGNORELOCAL = 54,
-        OPTION_AUTOBAN_ENABLE = 55,
-        OPTION_AUTOBAN_ATTEMPTS = 56,
-        OPTION_AUTOBAN_TYPE = 57,
-        OPTION_AUTOBAN_BANTIME = 58,
-        OPTION_TLS_MINVERSION = 59,
+        V11_OPTIONS_NUM = 60,
 
-        OPTIONS_NUM = 59
+        // Specific to protocol version V12
+        V12_CHECK_DATA_CONNECTION_IP = 6,
+        V12_SERVICE_NAME = 7,
+        V12_SERVICE_DISPLAY_NAME = 8,
+        V12_TLS_REQUIRE_SESSION_RESUMPTION = 9,
+        V12_ENABLETLS = 43,
+        V12_ALLOWEXPLICITTLS = 44,
+        V12_TLSKEYFILE = 45,
+        V12_TLSCERTFILE = 46,
+        V12_TLSPORTS = 47,
+        V12_TLSFORCEEXPLICIT = 48,
+        V12_TLSKEYPASS = 51,
+        V12_TLS_MINVERSION = 59,
+
+        V12_OPTIONS_NUM = 59
+
 #pragma warning restore 1591
         // ReSharper restore InconsistentNaming
     }

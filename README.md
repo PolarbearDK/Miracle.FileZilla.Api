@@ -1,7 +1,7 @@
 Miracle.FileZilla.Api
 =====================
 
-Managed api for FileZilla FTP server. Allows you to do basically the same as the FileZilla Server interface.
+Managed API for FileZilla FTP server. Allows you to do basically the same as the FileZilla Server interface.
 Target audience is everyone who wants to automate the administration of FileZilla server, particularly user/group management.
 
 ##Features
@@ -14,13 +14,16 @@ Target audience is everyone who wants to automate the administration of FileZill
 * Use FileZillaServerProtocol for more advanced implemetations.
 
 ##FileZilla Server versions supported
-* 0.9.46 - First version supported
-* 0.9.47 - ()Not recommended)
-* 0.9.48
-* 0.9.49
+Simplified: 0.9.43 or later
 
-Newer versions are supported provided that the FileZilla team has not changed the protocol version (an ApiException is thrown upon connect if that is the case).
-Basically: If the API can connect to the FileZilla server then you are good to go!
+###FileZilla Server versions tested during development
+* 0.9.43 - Verified to work (Last FileZilla Server to support Windows XP/2003)
+* 0.9.46 - First version supported
+* 0.9.48 - Protocol changed to support 16M users
+* 0.9.52 - Protocol changes mostly related to TLS
+
+Other versions than listed are supported provided that the FileZilla team has not changed the protocol version (an ApiException is thrown upon connect if that is the case).
+Basically: If the API are able to connect to the FileZilla server then you are good to go!
 If not then let me know, an I will fix it.
 
 ##Example: Create user in 5 easy steps:

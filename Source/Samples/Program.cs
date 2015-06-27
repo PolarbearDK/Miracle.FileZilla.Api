@@ -21,6 +21,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void Main(string[] args)
         {
+
             GetServerState();
             SetServerState();
             GetSettings();
@@ -36,7 +37,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void GetServerState()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -49,7 +50,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void SetServerState()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 fileZillaApi.Connect(ServerPassword);
@@ -79,7 +80,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void GetSettings()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -103,7 +104,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void SetSettings()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -113,7 +114,7 @@ namespace Miracle.FileZilla.Api.Samples
                 Console.WriteLine("Settings retrieved in {0}.", stopWatch.GetDelta());
 
                 // Select option to modify
-                var option = settings.GetOption(OptionIdPreV12.WELCOMEMESSAGE);
+                var option = settings.GetOption(OptionId.WELCOMEMESSAGE);
 
                 // Modify
                 string originalTextValue = option.TextValue;
@@ -131,20 +132,30 @@ namespace Miracle.FileZilla.Api.Samples
                     if (settings.Options[i].Label != settings2.Options[i].Label) throw new Exception("Uh uh");
                     if (settings.Options[i].NotRemotelyChangeable != settings2.Options[i].NotRemotelyChangeable) throw new Exception("Uh uh");
                     if (settings.Options[i].OptionType != settings2.Options[i].OptionType) throw new Exception("Uh uh");
-                    if (settings.Options[i].NumericValue != settings2.Options[i].NumericValue) throw new Exception("Uh uh");
-                    // Password is sent as "*" when not set
-                    if (settings.Options[i].TextValue != settings2.Options[i].TextValue && !(settings.Options[i].TextValue == "*" && settings2.Options[i].TextValue == null)) throw new Exception("Uh uh");
+                    if (settings.Options[i].NumericValue != settings2.Options[i].NumericValue)
+                    {
+                        // Numeric value of "No Transfer Timeout" is bumped up to 600 by the server. Ignore that.
+                        if (!(settings.Options[i].Label == "No Transfer Timeout" && settings.Options[i].NumericValue < 600 && settings2.Options[i].NumericValue == 600))
+                            throw new Exception("Uh uh");
+                    }
+
+                    if (settings.Options[i].TextValue != settings2.Options[i].TextValue )
+                    {
+                        // Admin Password is sent as "*" when not set
+                        if (!(settings.Options[i].Label == "Admin Password" && settings.Options[i].TextValue == "*" && settings2.Options[i].TextValue == null)) 
+                            throw new Exception("Uh uh");
+                    }                        
                 }
 
                 // Restore 
-                settings.GetOption(OptionIdPreV12.WELCOMEMESSAGE).TextValue = originalTextValue;
+                settings.GetOption(OptionId.WELCOMEMESSAGE).TextValue = originalTextValue;
                 fileZillaApi.SetSettings(settings);
             }
         }
 
         private static void GetConnections()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
 
@@ -163,7 +174,7 @@ namespace Miracle.FileZilla.Api.Samples
         /// </summary>
         private static void KickFirstConnection()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 fileZillaApi.Connect(ServerPassword);
@@ -183,7 +194,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void CreateUserAndGroup()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -257,7 +268,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void DeleteUser()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -281,7 +292,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void CreateLotsOfUsersAndGroups()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -348,7 +359,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void DeleteLotsOfUsersAndGroups()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
             {
                 var stopWatch = Stopwatch2.StartNew();
@@ -373,7 +384,7 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void GetMessagesLoop()
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
             using (var serverProtocol = new FileZillaServerProtocol(IPAddress.Parse(Ip), Port))
             {
                 serverProtocol.Log = new DebugTextWriter();

@@ -65,8 +65,8 @@ namespace Miracle.FileZilla.Api
         {
             // Check options
             if(ProtocolVersion < ProtocolVersions.TLS 
-                ? settings.Options.Count != (int)OptionIdPreV12.OPTIONS_NUM
-                : settings.Options.Count != (int)OptionIdPostV11.OPTIONS_NUM)
+                ? settings.Options.Count != (int)OptionId.V11_OPTIONS_NUM
+                : settings.Options.Count != (int)OptionId.V12_OPTIONS_NUM)
                 throw new ApiException("Bad option count");
             
             // Before serializing, give Admin Password option special treatment. 
@@ -75,7 +75,7 @@ namespace Miracle.FileZilla.Api
             //   - Not set (Null, serialized as "*")
             //   - Blank password ("")
             //   - Actual password
-            var adminPassword = settings.GetOption(OptionIdPreV12.ADMINPASS);
+            var adminPassword = settings.GetOption(OptionId.ADMINPASS);
             if (adminPassword.TextValue == null) adminPassword.TextValue = "*";
 
             SendCommand(MessageType.Settings, writer => settings.Serialize(writer, ProtocolVersion));

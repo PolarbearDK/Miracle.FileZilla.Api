@@ -113,7 +113,7 @@ namespace Miracle.FileZilla.Api
         }
 
         /// <summary>
-        /// Helper collection with info about options. Index of this matches index of Settings.Options.
+        /// Helper collection with info about options. Index of this matches index of Settings.Options of protocol versions up to v12.
         /// </summary>
         private static readonly OptionInfo[] OptionInfosPreV12 =
         {
@@ -244,6 +244,5 @@ namespace Miracle.FileZilla.Api
             new OptionInfo("Autoban time", 1, false),
             new OptionInfo("Minimum TLS version", 1, false),
         };
-
     }
 }

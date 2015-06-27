@@ -9,9 +9,9 @@ namespace Miracle.FileZilla.Api
     public class Settings : IBinarySerializable
     {
         /// <summary>
-        /// 
+        /// List of options. Note that Order of elements has been changed as of Protocol V12 (Server version 9.52)
         /// </summary>
-        public List<Option> Options { get; set; }
+        public List<Option> Options { get; private set; }
         /// <summary>
         /// Download speed limit
         /// </summary>
@@ -60,17 +60,7 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="optionId"></param>
         /// <returns></returns>
-        public Option GetOption(OptionIdPreV12 optionId)
-        {
-           return Options[(int)optionId -1]; // Off by one
-        }
-
-        /// <summary>
-        /// Get Option from OPtionId enumeration 
-        /// </summary>
-        /// <param name="optionId"></param>
-        /// <returns></returns>
-        public Option GetOption(OptionIdPostV11 optionId)
+        public Option GetOption(OptionId optionId)
         {
            return Options[(int)optionId -1]; // Off by one
         }

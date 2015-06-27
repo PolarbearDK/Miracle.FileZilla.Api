@@ -93,6 +93,7 @@ namespace Miracle.FileZilla.Api
                 writer.WriteLength(dataAction);
             }
 
+            Log.WriteLine("Send: {0}", messageType);
             Send(stream.ToArray());
         }
 
@@ -136,35 +137,54 @@ namespace Miracle.FileZilla.Api
         /// <returns>FileZilla message matching MessageType</returns>
         public FileZillaMessage ReceiveMessage(MessageType messageType)
         {
-            var messages = ReceiveMessages();
-            FileZillaMessage fileZillaMessage = null;
-            foreach (FileZillaMessage check in messages)
+            for (int retry = 0; retry < 5; retry++)
             {
-                if (check.MessageOrigin == MessageOrigin.ServerReply && check.MessageType == messageType)
+                var messages = ReceiveMessages();
+                FileZillaMessage fileZillaMessage = null;
+                bool allMessagesHandled = true;
+                foreach (FileZillaMessage check in messages)
                 {
-                    if (fileZillaMessage != null)
-                        throw new ProtocolException("Multiple commands matched");
-                    fileZillaMessage = check;
+                    if (check.MessageOrigin == MessageOrigin.ServerReply && check.MessageType == messageType)
+                    {
+                        if (fileZillaMessage != null)
+                            throw new ProtocolException("Multiple commands matched");
+                        fileZillaMessage = check;
+                    }
+                    else
+                    {
+                        if (!HandleUnmatchedMessage(messageType, check))
+                        {
+                            allMessagesHandled = false;
+                            break;
+                        }
+                    }
                 }
+
+                if (!allMessagesHandled)
+                    throw ProtocolException.Create(messageType, messages);
+
+                if (fileZillaMessage != null)
+                    return fileZillaMessage;
+
+                // Jedi mind trick: This is not the message you are looking for: Do it all again
+            }
+
+            throw new ProtocolException("Unable to receive message: " + messageType);
+        }
+
+        /// <summary>
+        /// Handle unmatched messages when calling ReceiveMessage method. Override to provide your own implementation (e.g. for logging)
+        /// </summary>
+        /// <param name="messageType">messageType sought</param>
+        /// <param name="message">actual message</param>
+        /// <returns>True if message can safely be ignored, False if message reception should be terminated.</returns>
+        protected virtual bool HandleUnmatchedMessage(MessageType messageType, FileZillaMessage message)
+        {
 #if DEBUG
-                else
-                {
-                    LogData(string.Format("Message ignored: {0}/{1} with length {2}", check.MessageOrigin, check.MessageType, check.RawData.Length), check.RawData);
-                }
+            LogData(string.Format("Unmatched message: {0}/{1} with length {2}", message.MessageOrigin, message.MessageType, message.RawData.Length), message.RawData);
 #endif
-            }
-
-            if (fileZillaMessage == null)
-            {
-                // All server messages? Poll again for the desired reply 
-                if (messages.All(x => x.MessageOrigin == MessageOrigin.ServerMessage))
-                    // Jedi mind trick: This is not the message you are looking for
-                    return ReceiveMessage(messageType);
-
-                throw ProtocolException.Create(messageType, messages);
-            }
-
-            return fileZillaMessage;
+            return message.MessageOrigin == MessageOrigin.ServerMessage 
+                || (message.MessageOrigin == MessageOrigin.ServerReply && message.MessageType == MessageType.Authenticate);
         }
 
         /// <summary>
@@ -225,7 +245,7 @@ namespace Miracle.FileZilla.Api
                 if (!SupportedProtocolVersions.Contains(ProtocolVersion))
                 {
                     if(ProtocolVersion < ProtocolVersions.Initial)
-                        throw new ApiException(string.Format("FileZilla server is too old. Install FileZilla Server 0.9.46 or later"));
+                        throw new ApiException(string.Format("FileZilla server is too old. Install FileZilla Server 0.9.43 or later"));
 
                     throw new ApiException(string.Format("Unsupported FileZilla protocol version:{0}. Report issue on https://github.com/PolarbearDK/Miracle.FileZilla.Api.", FormatVersion(ProtocolVersion)));
                 }
@@ -236,8 +256,8 @@ namespace Miracle.FileZilla.Api
             if (!authentication.NoPasswordRequired)
             {
                 SendCommand(MessageType.Authenticate, authentication.HashPassword(password));
+                Receive(MessageType.Authenticate);
             }
-            Receive(MessageType.Authenticate);
         }
 
         private string FormatVersion(int serverVersion)
