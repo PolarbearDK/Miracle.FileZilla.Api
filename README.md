@@ -24,11 +24,11 @@ Simplified: 0.9.43 or later
 
 Other versions than listed are supported provided that the FileZilla team has not changed the protocol version (an ApiException is thrown upon connect if that is the case).
 Basically: If the API are able to connect to the FileZilla server then you are good to go!
-If not then let me know, an I will fix it.
+If not then let me know, and I will fix it.
 
 ##Example: Create user in 5 easy steps:
 
-####1: Create api
+####1: Create instance of API
 ```csharp
 // Using localhost and default port
 var fileZillaApi = new FileZillaApi();
