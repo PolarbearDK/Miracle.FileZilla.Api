@@ -9,7 +9,7 @@
 		<projectUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
-		<releaseNotes>Better exception message when connecting to wrong server and/or port.</releaseNotes>
+		<releaseNotes>Support FileZilla Server versions 0.9.43-0.9.52+.</releaseNotes>
 		<copyright>Copyright 2014-2015</copyright>
 		<tags>FileZilla FTP server api create user users group groups setting settings automated</tags>
 	</metadata>
