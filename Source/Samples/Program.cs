@@ -23,7 +23,6 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void Main(string[] args)
         {
-
             GetServerState();
             SetServerState();
             GetSettings();
