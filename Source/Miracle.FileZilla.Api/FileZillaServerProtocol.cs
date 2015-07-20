@@ -93,8 +93,9 @@ namespace Miracle.FileZilla.Api
                 writer.WriteLength(dataAction);
             }
 
-            Log.WriteLine("Send: {0}", messageType);
-            Send(stream.ToArray());
+                if (Log != null)
+                    Log.WriteLine("Send: {0}", messageType);
+
         }
 
         /// <summary>
