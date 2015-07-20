@@ -85,17 +85,20 @@ namespace Miracle.FileZilla.Api
         /// <param name="dataAction">Method that writes the raw data to the command. Length is automatically generated for the data written by dataAction</param>
         public void SendCommand(MessageType messageType, Action<BinaryWriter> dataAction)
         {
-            var stream = new MemoryStream();
-            using (var writer = new BinaryWriter(stream))
+            using (var stream = new MemoryStream())
             {
-                var cmd = (byte)(((int)MessageOrigin.ClientRequest) | ((byte)messageType << 2));
-                writer.Write(cmd);
-                writer.WriteLength(dataAction);
-            }
+                using (var writer = new BinaryWriter(stream))
+                {
+                    var cmd = (byte) (((int) MessageOrigin.ClientRequest) | ((byte) messageType << 2));
+                    writer.Write(cmd);
+                    writer.WriteLength(dataAction);
+                }
 
                 if (Log != null)
                     Log.WriteLine("Send: {0}", messageType);
 
+                Send(stream.ToArray());
+            }
         }
 
         /// <summary>
@@ -196,24 +199,26 @@ namespace Miracle.FileZilla.Api
         {
             var data = Receive();
             var list = new List<FileZillaMessage>();
-            var memoryStream = new MemoryStream();
-            memoryStream.Append(data);
-            using (var reader = new BinaryReader(memoryStream))
+            using (var memoryStream = new MemoryStream())
             {
-                while (reader.BaseStream.Position < reader.BaseStream.Length)
+                memoryStream.Append(data);
+                using (var reader = new BinaryReader(memoryStream))
                 {
-                    var b = reader.ReadByte();
-                    var count = reader.ReadInt32();
-
-                    while ((reader.BaseStream.Length - reader.BaseStream.Position) < count)
+                    while (reader.BaseStream.Position < reader.BaseStream.Length)
                     {
-                        var buffer = Receive();
-                        memoryStream.Append(buffer);
-                    }
+                        var b = reader.ReadByte();
+                        var count = reader.ReadInt32();
 
-                    byte[] payload = reader.ReadBytes(count);
-                    var message = new FileZillaMessage((MessageOrigin)(b & 0x3), (MessageType)(b >> 2), payload, ProtocolVersion);
-                    list.Add(message);
+                        while ((reader.BaseStream.Length - reader.BaseStream.Position) < count)
+                        {
+                            var buffer = Receive();
+                            memoryStream.Append(buffer);
+                        }
+
+                        byte[] payload = reader.ReadBytes(count);
+                        var message = new FileZillaMessage((MessageOrigin) (b & 0x3), (MessageType) (b >> 2), payload, ProtocolVersion);
+                        list.Add(message);
+                    }
                 }
             }
             return list.ToArray();

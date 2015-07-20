@@ -23,18 +23,20 @@ namespace Miracle.FileZilla.Api.Test
             var source = fixture.Create<T>();
             var target = new T();
 
-            var memoryStream = new MemoryStream();
-            using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8))
+            using (var memoryStream = new MemoryStream())
             {
-                source.Serialize(writer, ProtocolVersion, 0);
-            }
-            byte[] data = memoryStream.ToArray();
-            
-            Hex.Dump(Console.Out, data);
+                using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8))
+                {
+                    source.Serialize(writer, ProtocolVersion, 0);
+                }
+                byte[] data = memoryStream.ToArray();
 
-            using (var reader = new BinaryReader(new MemoryStream(data)))
-            {
-                target.Deserialize(reader, ProtocolVersion);
+                Hex.Dump(Console.Out, data);
+
+                using (var reader = new BinaryReader(new MemoryStream(data)))
+                {
+                    target.Deserialize(reader, ProtocolVersion);
+                }
             }
 
             var compareLogic = new CompareLogic();
