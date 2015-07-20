@@ -19,6 +19,8 @@ namespace Miracle.FileZilla.Api.Samples
         private const int MaxUsers64K = 10000;
         private const string UserName = "MachineUser";
 
+        private static readonly DebugTextWriter DebugLog = new DebugTextWriter();
+
         private static void Main(string[] args)
         {
 
@@ -38,7 +40,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void GetServerState()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -51,7 +53,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void SetServerState()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 fileZillaApi.Connect(ServerPassword);
                 var serverState = fileZillaApi.GetServerState();
@@ -81,7 +83,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void GetSettings()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -105,7 +107,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void SetSettings()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -156,7 +158,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void GetConnections()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
 
                 var stopWatch = Stopwatch2.StartNew();
@@ -175,7 +177,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void KickFirstConnection()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 fileZillaApi.Connect(ServerPassword);
 
@@ -195,7 +197,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void CreateUserAndGroup()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -269,7 +271,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void DeleteUser()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -293,7 +295,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void CreateLotsOfUsersAndGroups()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -360,7 +362,7 @@ namespace Miracle.FileZilla.Api.Samples
         private static void DeleteLotsOfUsersAndGroups()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = new DebugTextWriter() })
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
                 var stopWatch = Stopwatch2.StartNew();
 
@@ -385,9 +387,8 @@ namespace Miracle.FileZilla.Api.Samples
         private static void GetMessagesLoop()
         {
             Console.WriteLine("-- {0} --", MethodBase.GetCurrentMethod().Name);
-            using (var serverProtocol = new FileZillaServerProtocol(IPAddress.Parse(Ip), Port))
+            using (var serverProtocol = new FileZillaServerProtocol(IPAddress.Parse(Ip), Port) { Log = DebugLog })
             {
-                serverProtocol.Log = new DebugTextWriter();
                 serverProtocol.Connect(ServerPassword);
                 Console.WriteLine("Listening to FileZilla server. Connect to server with FTP client now... (CTRL-C to exit)");
                 while (true)
