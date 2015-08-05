@@ -55,9 +55,9 @@ var user = new User
 	GroupName = "SomeGroup", // Reference to existing group
 	UserName = "NewUser",
 	Password = User.HashPassword("secret"),
-	Permissions = new List<Permission>()
+	SharedFolders = new List<SharedFolder>()
 	{
-		new Permission()
+		new SharedFolder()
 		{
 			Directory = @"C:\Hello\World",
 		}
@@ -70,7 +70,7 @@ accountSettings.Users.Add(user);
 fileZillaApi.SetAccountSettings(accountSettings);
 ```
 
-##Complete example:
+##Complete example (C#):
 ```csharp
 using (IFileZillaApi fileZillaApi = new FileZillaApi())
 {
@@ -81,9 +81,9 @@ using (IFileZillaApi fileZillaApi = new FileZillaApi())
         GroupName = "SomeGroup", // Reference to existing group
         UserName = "NewUser",
         Password = User.HashPassword("secret"),
-        Permissions = new List<Permission>()
+        SharedFolders = new List<SharedFolder>()
         {
-            new Permission()
+            new SharedFolder()
             {
                 Directory = @"C:\Hello\World",
             }
@@ -92,6 +92,25 @@ using (IFileZillaApi fileZillaApi = new FileZillaApi())
     accountSettings.Users.Add(user);
     fileZillaApi.SetAccountSettings(accountSettings);
 }
+```
+##Complete example (VB.NET):
+```vbnet
+Using fileZillaApi As IFileZillaApi = New FileZillaApi()
+    fileZillaApi.Connect("FileZilla password")
+    Dim accountSettings = fileZillaApi.GetAccountSettings()
+    ' Reference to existing group
+    Dim user = New User()
+    user.GroupName = "SomeGroup"
+    user.UserName = "NewUser"
+    user.Password = User.HashPassword("secret")
+    user.SharedFolders = New List(Of SharedFolder)() From {
+            New SharedFolder() With {
+                .Directory = "C:\Hello\World"
+            }
+        }
+    accountSettings.Users.Add(user)
+    fileZillaApi.SetAccountSettings(accountSettings)
+End Using
 ```
 
 Groups are managed just like Users using accountSettings.Groups.
