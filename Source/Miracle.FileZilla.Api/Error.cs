@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Miracle.FileZilla.Api
 {
-    internal class Error: IBinarySerializable
+    public class Error: IBinarySerializable
     {
         public bool IsError { get; set; }
         public string Message { get; set; }
