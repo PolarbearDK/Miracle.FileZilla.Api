@@ -390,19 +390,29 @@ namespace Miracle.FileZilla.Api.Samples
             {
                 serverProtocol.Connect(ServerPassword);
                 Console.WriteLine("Listening to FileZilla server. Connect to server with FTP client now... (CTRL-C to exit)");
+                Console.WriteLine("Causing a deliberate error to see error response");
+                serverProtocol.SendCommand((MessageType)42); // Send unknown command
                 while (true)
                 {
                     serverProtocol.SendCommand(MessageType.Loopback);
                     var messages = serverProtocol.ReceiveMessages();
                     foreach (var message in messages)
                     {
-                        if (message.MessageType != MessageType.Loopback)
+                        switch (message.MessageType)
                         {
-                            Console.WriteLine("{0} {1} ({2}){3}",
-                                message.MessageOrigin,
-                                message.MessageType,
-                                message.Body != null ? message.Body.GetType().Name : "null",
-                                message.Body != null ? JsonConvert.SerializeObject(message.Body) : "");
+                            case MessageType.Loopback:
+                                break;
+                            case MessageType.Error:
+                                var error = (Error)message.Body;
+                                Console.WriteLine("Error Message:{0} TextType:{1}", error.Message, error.TextType);
+                                break;
+                            default:
+                                Console.WriteLine("{0} {1} ({2}){3}",
+                                    message.MessageOrigin,
+                                    message.MessageType,
+                                    message.Body != null ? message.Body.GetType().Name : "null",
+                                    message.Body != null ? JsonConvert.SerializeObject(message.Body) : "");
+                                break;
                         }
                     }
                     Thread.Sleep(TimeSpan.FromSeconds(1));
