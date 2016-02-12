@@ -21,10 +21,11 @@ Simplified: 0.9.43 or later
 * 0.9.46 - First version supported
 * 0.9.48 - Protocol changed to support 16M users
 * 0.9.52 - Protocol changes mostly related to TLS
+* 0.9.54 - User passwords hashed using Sha512
 
 Other versions than listed are supported provided that the FileZilla team has not changed the protocol version (an ApiException is thrown upon connect if that is the case).
 Basically: If the API are able to connect to the FileZilla server then you are good to go!
-If not then let me know, and I will fix it.
+If not then let me know, and I will try to fix it.
 
 ##Example: Create user in 5 easy steps:
 
@@ -80,15 +81,16 @@ using (IFileZillaApi fileZillaApi = new FileZillaApi())
     {
         GroupName = "SomeGroup", // Reference to existing group
         UserName = "NewUser",
-        Password = User.HashPassword("secret"),
         SharedFolders = new List<SharedFolder>()
         {
             new SharedFolder()
             {
                 Directory = @"C:\Hello\World",
+                AccessRights = AccessRights.DirList | AccessRights.DirSubdirs | AccessRights.FileRead | AccessRights.FileWrite | AccessRights.IsHome
             }
         }
     };
+	user.AssignPassword("secret", fileZillaApi.ProtocolVersion);
     accountSettings.Users.Add(user);
     fileZillaApi.SetAccountSettings(accountSettings);
 }
@@ -102,12 +104,13 @@ Using fileZillaApi As IFileZillaApi = New FileZillaApi()
     Dim user = New User()
     user.GroupName = "SomeGroup"
     user.UserName = "NewUser"
-    user.Password = User.HashPassword("secret")
     user.SharedFolders = New List(Of SharedFolder)() From {
             New SharedFolder() With {
                 .Directory = "C:\Hello\World"
+				.AccessRights = AccessRights.DirList Or AccessRights.DirSubdirs Or AccessRights.FileRead Or AccessRights.FileWrite Or AccessRights.IsHome
             }
         }
+    user.AssignPassword("secret", fileZillaApi.ProtocolVersion)
     accountSettings.Users.Add(user)
     fileZillaApi.SetAccountSettings(accountSettings)
 End Using

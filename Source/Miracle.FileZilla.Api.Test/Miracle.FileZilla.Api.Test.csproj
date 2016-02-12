@@ -65,6 +65,7 @@
     <Compile Include="RandomDateSequenceGenerator.cs" />
     <Compile Include="RandomTriStateSequenceGenerator.cs" />
     <Compile Include="RandomTimeSpanSequenceGenerator.cs" />
+    <Compile Include="PasswordTests.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

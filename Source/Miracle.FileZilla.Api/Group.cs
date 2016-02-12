@@ -58,9 +58,9 @@ namespace Miracle.FileZilla.Api
         public List<string> AllowedIPs { get; set; }
         /// <summary>
         /// Use 8+3 filenames? This property is'nt available in the admin interface.
-        /// Better leave it alone...
+        /// Better leave it alone... Removed in later versions
         /// </summary>
-        public bool EightPlusThree { get; set; }
+        protected bool EightPlusThree { get; set; }
         /// <summary>
         /// List of permissions
         /// </summary>
@@ -112,7 +112,10 @@ namespace Miracle.FileZilla.Api
             Enabled = (TriState)((options >> 2) & 0x3);
             DisallowedIPs = reader.ReadTextList();
             AllowedIPs = reader.ReadTextList();
-            EightPlusThree = reader.ReadBoolean();
+            if (protocolVersion < ProtocolVersions.Sha512)
+            {
+                EightPlusThree = reader.ReadBoolean();
+            }
             SharedFolders = reader.ReadList16<SharedFolder>(protocolVersion);
             DownloadSpeedLimit = reader.Read<SpeedLimit>(protocolVersion);
             UploadSpeedLimit = reader.Read<SpeedLimit>(protocolVersion);
@@ -135,7 +138,10 @@ namespace Miracle.FileZilla.Api
             writer.Write(options);
             writer.WriteTextList(DisallowedIPs);
             writer.WriteTextList(AllowedIPs);
-            writer.Write(EightPlusThree);
+            if (protocolVersion < ProtocolVersions.Sha512)
+            {
+                writer.Write(EightPlusThree);
+            }
             writer.WriteList16(SharedFolders, protocolVersion);
             writer.Write(DownloadSpeedLimit, protocolVersion);
             writer.Write(UploadSpeedLimit, protocolVersion);

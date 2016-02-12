@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Miracle.FileZilla.Api
 {
@@ -19,7 +21,8 @@ namespace Miracle.FileZilla.Api
         {
             ProtocolVersions.Initial,
             ProtocolVersions.User16M,
-            ProtocolVersions.TLS
+            ProtocolVersions.TLS,
+            ProtocolVersions.Sha512
         };
         /// <summary>
         /// Defailt IP
@@ -251,9 +254,14 @@ namespace Miracle.FileZilla.Api
                 if (!SupportedProtocolVersions.Contains(ProtocolVersion))
                 {
                     if(ProtocolVersion < ProtocolVersions.Initial)
-                        throw new ApiException(string.Format("FileZilla server is too old. Install FileZilla Server 0.9.43 or later"));
+                        throw new ApiException("FileZilla server is too old. Install FileZilla Server 0.9.43 or later");
 
-                    throw new ApiException(string.Format("Unsupported FileZilla protocol version:{0}. Report issue on https://github.com/PolarbearDK/Miracle.FileZilla.Api.", FormatVersion(ProtocolVersion)));
+                    throw new ApiException(
+                        string.Format(
+                            "Unsupported FileZilla protocol version:{0} server version:{1} (API version: {2}). Please report issue at https://github.com/PolarbearDK/Miracle.FileZilla.Api.",
+                            FormatVersion(ProtocolVersion),
+                            FormatVersion(ServerVersion),
+                            Assembly.GetExecutingAssembly().GetName().Version));
                 }
 
                 authentication = reader.Read<Authentication>(ProtocolVersion);
