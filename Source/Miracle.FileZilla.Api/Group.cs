@@ -131,6 +131,10 @@ namespace Miracle.FileZilla.Api
         /// <param name="index">The 0 based index of this item in relation to any parent list</param>
         public virtual void Serialize(BinaryWriter writer, int protocolVersion, int index)
         {
+            // Switch user Enabled 'Default' to 'Yes' when not assigned a group.
+            if (Enabled == TriState.Default && GetType() == typeof(User) && string.IsNullOrEmpty(GroupName))
+                Enabled=TriState.Yes;
+
             writer.WriteText(GroupName);
             writer.Write(IpLimit);
             writer.Write(UserLimit);
