@@ -28,7 +28,6 @@ namespace Miracle.FileZilla.Api
         protected SocketCommunication(IPAddress address, int port)
         {
             _ipe = new IPEndPoint(address, port);
-            _socket = new Socket(_ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         }
 
         /// <summary>
@@ -57,7 +56,11 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         protected void Connect()
         {
+            if (IsConnected) throw new ApiException("Already connected");
+            Disconnect();
+
             _buffer = new byte[DefaultBufferSize];
+            _socket = new Socket(_ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             _socket.Connect(_ipe);
         }
 

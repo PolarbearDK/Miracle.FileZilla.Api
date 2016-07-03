@@ -1,7 +1,9 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using Newtonsoft.Json;
@@ -15,7 +17,7 @@ namespace Miracle.FileZilla.Api.Samples
         private const string ServerPassword = "master";
         private const int MaxGroups = 1000;
         private const string GroupName = "MachineGroup";
-        private const int MaxUsers16M = 100000;
+        private const int MaxUsers16M = 10000;
         private const int MaxUsers64K = 10000;
         private const string UserName = "MachineUser";
 
@@ -33,6 +35,7 @@ namespace Miracle.FileZilla.Api.Samples
             DeleteUser();
             CreateLotsOfUsersAndGroups();
             DeleteLotsOfUsersAndGroups();
+            ReuseConnection();
             GetMessagesLoop();
         }
 
@@ -381,6 +384,30 @@ namespace Miracle.FileZilla.Api.Samples
 
                 fileZillaApi.SetAccountSettings(accountSettings);
                 Console.WriteLine("Finished saving account settings in {0}.", stopWatch.GetDelta());
+            }
+        }
+
+        private static void ReuseConnection()
+        {
+            Console.WriteLine("\n-- {0} --", MethodBase.GetCurrentMethod().Name);
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
+            {
+                var stopWatch = Stopwatch2.StartNew();
+
+                fileZillaApi.Connect(ServerPassword);
+                var serverState = fileZillaApi.GetServerState();
+                Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
+
+                // Get to _socket variable using reflection.
+                var field= typeof(SocketCommunication).GetField("_socket", BindingFlags.NonPublic | BindingFlags.Instance);
+                var socket = (Socket)field.GetValue(fileZillaApi);
+                // Disconnect socket to simulate that connection has been broken.
+                socket.Disconnect(false);
+
+                if(fileZillaApi.IsConnected) throw new ApplicationException("Hmm, it is supposed to be disconnected");
+                fileZillaApi.Connect(ServerPassword);
+                serverState = fileZillaApi.GetServerState();
+                Console.WriteLine("Connected in {0}. State is {1}", stopWatch.GetDelta(), serverState);
             }
         }
 
