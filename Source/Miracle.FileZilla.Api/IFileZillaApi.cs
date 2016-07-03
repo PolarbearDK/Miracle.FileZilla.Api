@@ -84,6 +84,9 @@ namespace Miracle.FileZilla.Api
         /// Check if socket is connected
         /// </summary>
         bool IsConnected { get; }
-
+        /// <summary>
+        /// How many times to try to get a message of a particular type before giving up.
+        /// </summary>
+        int ReceiveMessageRetryCount { get; set; }
     }
 }

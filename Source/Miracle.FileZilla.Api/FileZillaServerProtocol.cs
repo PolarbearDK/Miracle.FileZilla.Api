@@ -14,6 +14,8 @@ namespace Miracle.FileZilla.Api
     /// </summary>
     public class FileZillaServerProtocol : SocketCommunication
     {
+        private int _receiveMessageRetryCount = 10;
+
         /// <summary>
         /// Versions used to develop this API
         /// </summary>
@@ -24,6 +26,7 @@ namespace Miracle.FileZilla.Api
             ProtocolVersions.TLS,
             ProtocolVersions.Sha512
         };
+
         /// <summary>
         /// Defailt IP
         /// </summary>
@@ -41,6 +44,19 @@ namespace Miracle.FileZilla.Api
         /// Protocol version. Populated by Connect method.
         /// </summary>
         public int ProtocolVersion { get; private set; }
+
+        /// <summary>
+        /// How many times to try to get a message of a particular type before giving up.
+        /// </summary>
+        public int ReceiveMessageRetryCount
+        {
+            get { return _receiveMessageRetryCount; }
+            set
+            {
+                if(value < 1) throw new ArgumentException("Must be a number greater than 0");
+                _receiveMessageRetryCount = value;
+            }
+        }
 
         /// <summary>
         /// Constructor
@@ -140,11 +156,11 @@ namespace Miracle.FileZilla.Api
         /// <summary>
         /// Receive specific message matching MessageType. Note! This filters away all ServerMessages to get to that particular message.
         /// </summary>
-        /// <param name="messageType"></param>
+        /// <param name="messageType">The type of message to find</param>
         /// <returns>FileZilla message matching MessageType</returns>
         public FileZillaMessage ReceiveMessage(MessageType messageType)
         {
-            for (int retry = 0; retry < 5; retry++)
+            for (int retry = 0; retry < ReceiveMessageRetryCount; retry++)
             {
                 var messages = ReceiveMessages();
                 FileZillaMessage fileZillaMessage = null;
