@@ -22,6 +22,7 @@ Simplified: 0.9.43 or later
 * 0.9.48 - Protocol changed to support 16M users
 * 0.9.52 - Protocol changes mostly related to TLS
 * 0.9.54 - User passwords hashed using Sha512
+* 0.9.58 - UserControl size changed to 24 bit.
 
 Other versions than listed are supported provided that the FileZilla team has not changed the protocol version (an ApiException is thrown upon connect if that is the case).
 Basically: If the API are able to connect to the FileZilla server then you are good to go!
@@ -90,7 +91,7 @@ using (IFileZillaApi fileZillaApi = new FileZillaApi())
             }
         }
     };
-	user.AssignPassword("secret", fileZillaApi.ProtocolVersion);
+		user.AssignPassword("secret", fileZillaApi.ProtocolVersion);
     accountSettings.Users.Add(user);
     fileZillaApi.SetAccountSettings(accountSettings);
 }
