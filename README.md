@@ -4,6 +4,9 @@ Miracle.FileZilla.Api
 Managed API for FileZilla FTP server. Allows you to do basically the same as the FileZilla Server interface.
 Target audience is everyone who wants to automate the administration of FileZilla server, particularly user/group management.
 
+## Usage
+Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/packages/Miracle.FileZilla.Api/)
+
 ##Features
 * Get/Set Groups/Users using GetAccountSettings/SetAccountSettings methods.
 * Get/Set server state using GetServerState/SetServerState methods.
