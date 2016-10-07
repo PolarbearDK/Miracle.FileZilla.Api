@@ -22,8 +22,13 @@ namespace Miracle.FileZilla.Api
         public const int TLS = 0x00012000;
         /// <summary>
         /// User password with Sha512 hashing
-        /// Server version 0x00095400 - ?
+        /// Server version 0x00095400 - 0x00095700
         /// </summary>
         public const int Sha512 = 0x00013000;
+        /// <summary>
+        /// UserControl now has a 24 bit size
+        /// Server version 0x00095800 - ?
+        /// </summary>
+        public const int UserControl24 = 0x00014000;
     }
 }

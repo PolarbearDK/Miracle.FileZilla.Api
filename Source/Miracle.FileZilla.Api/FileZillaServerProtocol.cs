@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Miracle.FileZilla.Api
 {
@@ -24,7 +23,8 @@ namespace Miracle.FileZilla.Api
             ProtocolVersions.Initial,
             ProtocolVersions.User16M,
             ProtocolVersions.TLS,
-            ProtocolVersions.Sha512
+            ProtocolVersions.Sha512,
+            ProtocolVersions.UserControl24
         };
 
         /// <summary>

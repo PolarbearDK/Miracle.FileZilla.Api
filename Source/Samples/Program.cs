@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -25,12 +24,12 @@ namespace Miracle.FileZilla.Api.Samples
 
         private static void Main(string[] args)
         {
+            GetConnections();
+            KickFirstConnection();
             GetServerState();
             SetServerState();
             GetSettings();
             SetSettings();
-            GetConnections();
-            KickFirstConnection();
             CreateUserAndGroup();
             DeleteUser();
             CreateLotsOfUsersAndGroups();
@@ -419,7 +418,7 @@ namespace Miracle.FileZilla.Api.Samples
                 serverProtocol.Connect(ServerPassword);
                 Console.WriteLine("Listening to FileZilla server. Connect to server with FTP client now... (CTRL-C to exit)");
                 Console.WriteLine("Causing a deliberate error to see error response");
-                serverProtocol.SendCommand((MessageType)42); // Send unknown command
+                serverProtocol.SendCommand((MessageType)42); // Send deliberate unknown command
                 while (true)
                 {
                     serverProtocol.SendCommand(MessageType.Loopback);
