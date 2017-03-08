@@ -89,7 +89,7 @@ namespace Miracle.FileZilla.Api
                 {
                     Password = pass.Substring(0, length.Value);
                 }
-                Password = HashPasswordSha512(password, Salt);
+                Password = pass;
             }
         }
 
