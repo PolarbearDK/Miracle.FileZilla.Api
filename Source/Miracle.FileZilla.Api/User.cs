@@ -69,16 +69,27 @@ namespace Miracle.FileZilla.Api
         /// </summary>
         /// <param name="password">New passwordinary writer to write data to</param>
         /// <param name="protocolVersion">Current FileZilla protocol version</param>
-        public void AssignPassword(string password, int protocolVersion)
+        /// <param name="length">Optional parameter to limit the length of the generated password</param>
+        public void AssignPassword(string password, int protocolVersion, int? length = null)
         {
             if (protocolVersion < ProtocolVersions.Sha512)
             {
-                Password = HashPasswordMd5(password);
+                var pass = HashPasswordMd5(password);
+                if (length.HasValue)
+                {
+                    Password = pass.Substring(0, length.Value);
+                }
+                Password = pass;
             }
             else
             {
                 Salt = GenerateSalt();
-                Password = HashPasswordSha512(password,Salt);
+                var pass = HashPasswordSha512(password, Salt);
+                if (length.HasValue)
+                {
+                    Password = pass.Substring(0, length.Value);
+                }
+                Password = HashPasswordSha512(password, Salt);
             }
         }
 
