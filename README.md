@@ -7,7 +7,7 @@ Target audience is everyone who wants to automate the administration of FileZill
 ## Usage
 Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/packages/Miracle.FileZilla.Api/)
 
-##Features
+## Features
 * Get/Set Groups/Users using GetAccountSettings/SetAccountSettings methods.
 * Get/Set server state using GetServerState/SetServerState methods.
 * Get/Set server settings using GetSettings/SetSettings methods.
@@ -16,10 +16,10 @@ Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/pack
 * Ban IP (and kick) using BanIp method.
 * Use FileZillaServerProtocol for more advanced implemetations.
 
-##FileZilla Server versions supported
+## FileZilla Server versions supported
 Simplified: 0.9.43 or later
 
-###FileZilla Server versions tested during development
+### FileZilla Server versions tested during development
 * 0.9.43 - Verified to work (Last FileZilla Server to support Windows XP/2003)
 * 0.9.46 - First version supported
 * 0.9.48 - Protocol changed to support 16M users
@@ -31,9 +31,9 @@ Other versions than listed are supported provided that the FileZilla team has no
 Basically: If the API are able to connect to the FileZilla server then you are good to go!
 If not then let me know, and I will try to fix it.
 
-##Example: Create user in 5 easy steps:
+## Example: Create user in 5 easy steps:
 
-####1: Create instance of API
+#### 1: Create instance of API
 ```csharp
 // Using localhost and default port
 var fileZillaApi = new FileZillaApi();
@@ -43,17 +43,17 @@ or
 var fileZillaApi = new FileZillaApi(IPAddress.Parse("192.168.0.42"), 54321);
 ```
 
-####2: Connect to FileZilla server
+#### 2: Connect to FileZilla server
 ```csharp
 fileZillaApi.Connect("FileZilla password");
 ```
 
-####3: Get account settings which includes all users and groups
+#### 3: Get account settings which includes all users and groups
 ```csharp
 var accountSettings = fileZillaApi.GetAccountSettings();
 ```
 
-####4: Modify Users and Groups lists as desired (add/change/delete). 
+#### 4: Modify Users and Groups lists as desired (add/change/delete). 
 ```csharp
 var user = new User
 {
@@ -70,12 +70,12 @@ var user = new User
 };
 accountSettings.Users.Add(user);
 ```
-####5: Save account settings. This will override all users and groups. 
+#### 5: Save account settings. This will override all users and groups. 
 ```csharp
 fileZillaApi.SetAccountSettings(accountSettings);
 ```
 
-##Complete example (C#):
+## Complete example (C#):
 ```csharp
 using (IFileZillaApi fileZillaApi = new FileZillaApi())
 {
@@ -99,7 +99,7 @@ using (IFileZillaApi fileZillaApi = new FileZillaApi())
     fileZillaApi.SetAccountSettings(accountSettings);
 }
 ```
-##Complete example (VB.NET):
+## Complete example (VB.NET):
 ```vbnet
 Using fileZillaApi As IFileZillaApi = New FileZillaApi()
     fileZillaApi.Connect("FileZilla password")
@@ -122,4 +122,4 @@ End Using
 
 Groups are managed just like Users using accountSettings.Groups.
 
-####See sample project for further information.
+#### See sample project for further information.
