@@ -3,7 +3,7 @@
     <TargetFrameworks>net462;netstandard2.0;net45;net452;net46;net461</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Miracle.FileZilla.Api</DocumentationFile>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <Authors>Philip Hoppe</Authors>
     <Company>Miracle A/S</Company>
     <PackageLicenseUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api/raw/master/LICENSE</PackageLicenseUrl>
@@ -11,7 +11,7 @@
     <Description>Managed api for FileZilla FTP server. Primarily for automated user/group management, but all functionallity in the FileZilla Server interface is supported.</Description>
     <Copyright>Copyright © Philip Hoppe, Miracle A/S 2014-2018</Copyright>
     <PackageTags>FileZilla FTP server api create user users group groups setting settings automate automated state</PackageTags>
-    <PackageReleaseNotes>Add support  for  .net standard 2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Add support for most framework versions including .net standard 2.0</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api/raw/master/nuget-icon.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api</RepositoryUrl>

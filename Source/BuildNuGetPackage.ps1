@@ -8,9 +8,9 @@ $ErrorActionPreference = "Stop"
 
 if ($pack) {
     & dotnet build --configuration Release
-    if (!$?) {throw "NuGet returned exit code $LASTEXITCODE"}
+    if (!$?) {throw "dotnet build returned exit code $LASTEXITCODE"}
     dotnet test .\Miracle.FileZilla.Api.Test\ --configuration Release
-    if (!$?) {throw "NuGet returned exit code $LASTEXITCODE"}
+    if (!$?) {throw "dotnet test returned exit code $LASTEXITCODE"}
 }
 
 if ($push) {
