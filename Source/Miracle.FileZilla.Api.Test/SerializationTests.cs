@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
+using AutoFixture;
 
 namespace Miracle.FileZilla.Api.Test
 {

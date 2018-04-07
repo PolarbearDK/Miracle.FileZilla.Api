@@ -1,6 +1,6 @@
 ﻿using System;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.Kernel;
+using AutoFixture;
+using AutoFixture.Kernel;
 
 namespace Miracle.FileZilla.Api.Test
 {
@@ -56,7 +56,7 @@ namespace Miracle.FileZilla.Api.Test
 
             return IsTriStateRequest(request)
                 ? this.CreateRandomTriState(context)
-                : new NoSpecimen(request);
+                : new NoSpecimen();
         }
 
         private static bool IsTriStateRequest(object request)

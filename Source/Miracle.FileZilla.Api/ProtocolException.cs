@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -35,15 +36,16 @@ namespace Miracle.FileZilla.Api
         {
         }
 
-        /// <summary>
-        /// Creates a new Exception.
-        /// </summary>
-        protected ProtocolException(
+#if NETFULL
+		/// <summary>
+		/// Creates a new Exception.
+		/// </summary>
+		protected ProtocolException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }
-
+#endif
 
         internal static ProtocolException Create(MessageType expectedMessageType, FileZillaMessage[] actualFileZillaMessages)
         {
@@ -54,38 +56,22 @@ namespace Miracle.FileZilla.Api
             return new ProtocolException(message);
         }
 
-        /// <summary>
-        /// Create expected/actual exception.
-        /// </summary>
-        /// <typeparam name="T">Generic type of expected/actual</typeparam>
-        /// <param name="reader">binary reader to get position from</param>
-        /// <param name="expected">expected value</param>
-        /// <param name="actual">actual value</param>
-        /// <returns></returns>
-        public static ProtocolException Create<T>(BinaryReader reader, T expected, T actual)
+		/// <summary>
+		/// Create expected/actual exception.
+		/// </summary>
+		/// <typeparam name="T">Generic type of expected/actual</typeparam>
+		/// <param name="expected">expected value</param>
+		/// <param name="actual">actual value</param>
+		/// <param name="offset">Byte offset of reader</param>
+		/// <returns></returns>
+		public static ProtocolException Create<T>(T expected, T actual, long offset)
         {
             var message = string.Format("Expected {0} {1} actual {2} at offset 0x{3:x}({3})", 
                 typeof(T).Name,
                 expected, 
                 actual,
-                reader.BaseStream.Position - SizeOf<T>());
+                offset);
             return new ProtocolException(message);
-        }
-
-
-        /// <summary>
-        /// Get size of generic type in bytes
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        private static int SizeOf<T>()
-        {
-            var dm = new DynamicMethod("$", typeof (int), Type.EmptyTypes);
-            var il = dm.GetILGenerator();
-            il.Emit(OpCodes.Sizeof, typeof (T));
-            il.Emit(OpCodes.Ret);
-            var func = (Func<int>) dm.CreateDelegate(typeof (Func<int>));
-            return func();
         }
     }
 }

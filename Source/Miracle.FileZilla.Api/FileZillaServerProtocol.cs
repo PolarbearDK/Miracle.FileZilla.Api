@@ -277,7 +277,7 @@ namespace Miracle.FileZilla.Api
                             "Unsupported FileZilla protocol version:{0} server version:{1} (API version: {2}). Please report issue at https://github.com/PolarbearDK/Miracle.FileZilla.Api.",
                             FormatVersion(ProtocolVersion),
                             FormatVersion(ServerVersion),
-                            Assembly.GetExecutingAssembly().GetName().Version));
+		                    this.GetType().GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version));
                 }
 
                 authentication = reader.Read<Authentication>(ProtocolVersion);

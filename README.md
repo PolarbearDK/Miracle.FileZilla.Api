@@ -1,13 +1,14 @@
-Miracle.FileZilla.Api
-=====================
+# Miracle.FileZilla.Api
 
 Managed API for FileZilla FTP server. Allows you to do basically the same as the FileZilla Server interface.
 Target audience is everyone who wants to automate the administration of FileZilla server, particularly user/group management.
 
 ## Usage
+
 Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/packages/Miracle.FileZilla.Api/)
 
 ## Features
+
 * Get/Set Groups/Users using GetAccountSettings/SetAccountSettings methods.
 * Get/Set server state using GetServerState/SetServerState methods.
 * Get/Set server settings using GetSettings/SetSettings methods.
@@ -17,23 +18,25 @@ Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/pack
 * Use FileZillaServerProtocol for more advanced implemetations.
 
 ## FileZilla Server versions supported
-Simplified: 0.9.43 or later
+
+Simplified: 0.9.43 or later. If the API are able to connect to the FileZilla server then you are good to go!
 
 ### FileZilla Server versions tested during development
+
 * 0.9.43 - Verified to work (Last FileZilla Server to support Windows XP/2003)
 * 0.9.46 - First version supported
 * 0.9.48 - Protocol changed to support 16M users
 * 0.9.52 - Protocol changes mostly related to TLS
 * 0.9.54 - User passwords hashed using Sha512
 * 0.9.58 - UserControl size changed to 24 bit.
+* 0.9.60 - No protocol changes.
 
-Other versions than listed are supported provided that the FileZilla team has not changed the protocol version (an ApiException is thrown upon connect if that is the case).
-Basically: If the API are able to connect to the FileZilla server then you are good to go!
-If not then let me know, and I will try to fix it.
+Other versions than listed are supported provided that the FileZilla team has not changed the protocol version. An ApiException is thrown upon connect if that is the case. Let me know, and I will try to fix it.
 
 ## Example: Create user in 5 easy steps:
 
 #### 1: Create instance of API
+
 ```csharp
 // Using localhost and default port
 var fileZillaApi = new FileZillaApi();
@@ -44,16 +47,19 @@ var fileZillaApi = new FileZillaApi(IPAddress.Parse("192.168.0.42"), 54321);
 ```
 
 #### 2: Connect to FileZilla server
+
 ```csharp
-fileZillaApi.Connect("FileZilla password");
+fileZillaApi.Connect(myAdminPassword);
 ```
 
 #### 3: Get account settings which includes all users and groups
+
 ```csharp
 var accountSettings = fileZillaApi.GetAccountSettings();
 ```
 
-#### 4: Modify Users and Groups lists as desired (add/change/delete). 
+#### 4: Modify Users and Groups lists as desired (add/change/delete).
+
 ```csharp
 var user = new User
 {
@@ -70,12 +76,15 @@ var user = new User
 };
 accountSettings.Users.Add(user);
 ```
-#### 5: Save account settings. This will override all users and groups. 
+
+#### 5: Save account settings. This will override all users and groups.
+
 ```csharp
 fileZillaApi.SetAccountSettings(accountSettings);
 ```
 
 ## Complete example (C#):
+
 ```csharp
 using (IFileZillaApi fileZillaApi = new FileZillaApi())
 {
@@ -99,7 +108,9 @@ using (IFileZillaApi fileZillaApi = new FileZillaApi())
     fileZillaApi.SetAccountSettings(accountSettings);
 }
 ```
+
 ## Complete example (VB.NET):
+
 ```vbnet
 Using fileZillaApi As IFileZillaApi = New FileZillaApi()
     fileZillaApi.Connect("FileZilla password")

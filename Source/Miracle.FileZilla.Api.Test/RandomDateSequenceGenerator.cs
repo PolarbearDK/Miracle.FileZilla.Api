@@ -1,6 +1,6 @@
 ﻿using System;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.Kernel;
+using AutoFixture;
+using AutoFixture.Kernel;
 
 namespace Miracle.FileZilla.Api.Test
 {
@@ -60,7 +60,7 @@ namespace Miracle.FileZilla.Api.Test
             }
 
             return IsNotDateTimeRequest(request)
-                       ? new NoSpecimen(request)
+                       ? new NoSpecimen()
                        : CreateRandomDate(context);
         }
 

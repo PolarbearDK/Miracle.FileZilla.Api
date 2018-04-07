@@ -5,7 +5,6 @@ using System.Net;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 
 namespace Miracle.FileZilla.Api.Test
 {

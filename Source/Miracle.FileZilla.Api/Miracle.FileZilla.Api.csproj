@@ -1,96 +1,54 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{120D1D29-B6E2-4452-8FA7-F23E69EF29CD}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Miracle.FileZilla.Api</RootNamespace>
-    <AssemblyName>Miracle.FileZilla.Api</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFrameworks>net462;netstandard2.0;net45;net452;net46;net461</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Miracle.FileZilla.Api</DocumentationFile>
+    <Version>3.1.0</Version>
+    <Authors>Philip Hoppe</Authors>
+    <Company>Miracle A/S</Company>
+    <PackageLicenseUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api/raw/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api</PackageProjectUrl>
+    <Description>Managed api for FileZilla FTP server. Primarily for automated user/group management, but all functionallity in the FileZilla Server interface is supported.</Description>
+    <Copyright>Copyright © Philip Hoppe, Miracle A/S 2014-2018</Copyright>
+    <PackageTags>FileZilla FTP server api create user users group groups setting settings automate automated state</PackageTags>
+    <PackageReleaseNotes>Add support  for  .net standard 2.0</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api/raw/master/nuget-icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/PolarbearDK/Miracle.FileZilla.Api</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+  <!-- .NET Standard references, compilation flags and build options -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+    <DefineConstants>NETCORE;NETSTANDARD;NETSTANDARD1_6</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Miracle.FileZilla.Api.XML</DocumentationFile>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <DefineConstants>NETCORE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6' OR '$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.4.0" />
+  </ItemGroup>
+  <!-- .NET 4.x references, compilation flags and build options -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+    <DefineConstants>NETFULL;NET45</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
+    <DefineConstants>NETFULL;NET45;NET452</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+    <DefineConstants>NETFULL;NET46</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFULL;NET46;NET461</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+    <DefineConstants>NETFULL;NET46;NET462</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard1.6' AND '$(TargetFramework)' != 'netstandard2.0'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MemoryStreamExtensions.cs" />
-    <Compile Include="ConnOp.cs" />
-    <Compile Include="ConnectionAdded.cs" />
-    <Compile Include="ConnectionRemoved.cs" />
-    <Compile Include="ConnectionTransferOffsets.cs" />
-    <Compile Include="ConnectionUserChanged.cs" />
-    <Compile Include="Event.cs" />
-    <Compile Include="Option.cs" />
-    <Compile Include="Error.cs" />
-    <Compile Include="OptionId.cs" />
-    <Compile Include="OptionInfo.cs" />
-    <Compile Include="OptionType.cs" />
-    <Compile Include="ProtocolVersions.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Transfer.cs" />
-    <Compile Include="TransferInfo.cs" />
-    <Compile Include="TransferMode.cs" />
-    <Compile Include="TransferType.cs" />
-    <Compile Include="FileZillaApi.cs" />
-    <Compile Include="FileZillaServerProtocol.cs" />
-    <Compile Include="SocketCommunication.cs" />
-    <Compile Include="ApiException.cs" />
-    <Compile Include="BinaryExtensions.cs" />
-    <Compile Include="Hex.cs" />
-    <Compile Include="FileZillaMessage.cs" />
-    <Compile Include="MessageType.cs" />
-    <Compile Include="MessageOrigin.cs" />
-    <Compile Include="AccountSettings.cs" />
-    <Compile Include="Connection.cs" />
-    <Compile Include="Days.cs" />
-    <Compile Include="Group.cs" />
-    <Compile Include="SpeedLimit.cs" />
-    <Compile Include="Authentication.cs" />
-    <Compile Include="SharedFolder.cs" />
-    <Compile Include="AccessRights.cs" />
-    <Compile Include="ServerState.cs" />
-    <Compile Include="SpeedLimitRule.cs" />
-    <Compile Include="SpeedLimitType.cs" />
-    <Compile Include="TriState.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="UserControl.cs" />
-    <Compile Include="IBinarySerializable.cs" />
-    <Compile Include="IFileZillaApi.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtocolException.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Miracle.FileZilla.Api.nuspec" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

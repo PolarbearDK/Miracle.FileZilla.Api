@@ -1,6 +1,6 @@
 ﻿using System;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.Kernel;
+using AutoFixture;
+using AutoFixture.Kernel;
 
 namespace Miracle.FileZilla.Api.Test
 {
@@ -37,7 +37,7 @@ namespace Miracle.FileZilla.Api.Test
 
             return typeof(Option).IsAssignableFrom(request as Type) 
                 ? CreateRandom(context) 
-                : new NoSpecimen(request);
+                : new NoSpecimen();
         }
 
         private object CreateRandom(ISpecimenContext context)

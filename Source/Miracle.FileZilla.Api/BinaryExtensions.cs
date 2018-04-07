@@ -330,9 +330,10 @@ namespace Miracle.FileZilla.Api
 
         public static void Verify(this BinaryReader reader, byte expected)
         {
+	        var positionBefore = reader.BaseStream.Position;
             var actual = reader.ReadByte();
             if (actual != expected)
-                throw ProtocolException.Create(reader, expected, actual);
+                throw ProtocolException.Create(expected, actual, positionBefore);
         }
 
         public static void Verify(this BinaryReader reader, MessageOrigin expectedMessageOrigin, MessageType expectedMessageType)
@@ -353,16 +354,18 @@ namespace Miracle.FileZilla.Api
 
         public static void Verify(this BinaryReader reader, ushort expected)
         {
+	        var positionBefore = reader.BaseStream.Position;
             var actual = reader.ReadUInt16();
             if (actual != expected)
-                throw ProtocolException.Create(reader, expected, actual);
+                throw ProtocolException.Create(expected, actual, positionBefore);
         }
 
         public static void Verify(this BinaryReader reader, uint expected)
         {
+	        var positionBefore = reader.BaseStream.Position;
             var actual = reader.ReadUInt32();
             if (actual != expected)
-                throw ProtocolException.Create(reader, expected, actual);
+                throw ProtocolException.Create(expected, actual, positionBefore);
         }
     }
 }
