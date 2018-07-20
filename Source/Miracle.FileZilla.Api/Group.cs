@@ -80,7 +80,7 @@ namespace Miracle.FileZilla.Api
         /// <summary>
         /// Force the use of SSL
         /// </summary>
-        public bool ForceSsl { get; set; }
+        public TriState ForceSsl { get; set; }
 
         /// <summary>
         /// Default constructor (sets defaults as in FileZilla server interface)
@@ -94,6 +94,7 @@ namespace Miracle.FileZilla.Api
             SharedFolders = new List<SharedFolder>();
             DownloadSpeedLimit = new SpeedLimit(GetType() == typeof(Group));
             UploadSpeedLimit = new SpeedLimit(GetType() == typeof(Group));
+	        ForceSsl = TriState.Default;
         }
 
         /// <summary>
@@ -120,7 +121,8 @@ namespace Miracle.FileZilla.Api
             DownloadSpeedLimit = reader.Read<SpeedLimit>(protocolVersion);
             UploadSpeedLimit = reader.Read<SpeedLimit>(protocolVersion);
             Comment = reader.ReadText();
-            ForceSsl = reader.ReadBoolean();
+	        var forceSsl = reader.ReadByte();
+			ForceSsl = (TriState)(forceSsl & 0x3);
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace Miracle.FileZilla.Api
             writer.Write(DownloadSpeedLimit, protocolVersion);
             writer.Write(UploadSpeedLimit, protocolVersion);
             writer.WriteText(Comment);
-            writer.Write(ForceSsl);
+            writer.Write((byte)ForceSsl);
         }
     }
 }

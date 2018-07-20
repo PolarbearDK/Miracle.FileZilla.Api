@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -231,7 +231,7 @@ namespace Miracle.FileZilla.Api.Samples
                     },
                     AllowedIPs = new List<string>() { "127.0.0.1", "10.10.10.10", "42.42.42.42", "::1" },
                     DisallowedIPs = new List<string>() { "172.0.0.0" },
-                    ForceSsl = true,
+                    ForceSsl = TriState.Yes,
                     Comment = "The quick brown fox jumps over the lazy dog",
                     BypassUserLimit = TriState.No,
                 };
@@ -444,7 +444,7 @@ namespace Miracle.FileZilla.Api.Samples
                         }
                     }
 
-	                Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+					Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
             }
         }
