@@ -16,10 +16,10 @@ namespace Miracle.FileZilla.Api.Samples
         private const int Port = 14147;
         private const string ServerPassword = "master";
         private const int MaxGroups = 1000;
-        private const string GroupName = "MachineGroup";
+        private const string ExampleGroupName = "MachineGroup";
         private const int MaxUsers16M = 10000;
         private const int MaxUsers64K = 10000;
-        private const string UserName = "MachineUser";
+        private const string ExampleUserName = "MachineUser";
 
         private static readonly DebugTextWriter DebugLog = new DebugTextWriter();
 
@@ -32,6 +32,7 @@ namespace Miracle.FileZilla.Api.Samples
             GetSettings();
             SetSettings();
             CreateUserAndGroup();
+            ChangeExistingUser();
             DeleteUser();
             CreateLotsOfUsersAndGroups();
             DeleteLotsOfUsersAndGroups();
@@ -215,7 +216,7 @@ namespace Miracle.FileZilla.Api.Samples
 
                 var group = new Group()
                 {
-                    GroupName = GroupName,
+                    GroupName = ExampleGroupName,
                     SharedFolders = new List<SharedFolder>()
                     {
                         new SharedFolder()
@@ -235,13 +236,13 @@ namespace Miracle.FileZilla.Api.Samples
                     Comment = "The quick brown fox jumps over the lazy dog",
                     BypassUserLimit = TriState.No,
                 };
-                accountSettings.Groups.RemoveAll(x => x.GroupName == GroupName);
+                accountSettings.Groups.RemoveAll(x => x.GroupName == ExampleGroupName);
                 accountSettings.Groups.Add(@group);
 
                 var user = new User
                 {
-                    GroupName = GroupName, // Reference to group
-                    UserName = UserName,
+                    GroupName = ExampleGroupName, // Reference to group
+                    UserName = ExampleUserName,
                     SharedFolders = new List<SharedFolder>()
                     {
                         new SharedFolder()
@@ -257,7 +258,7 @@ namespace Miracle.FileZilla.Api.Samples
                     }
                 };
                 user.AssignPassword("test42", fileZillaApi.ProtocolVersion);
-                accountSettings.Users.RemoveAll(x => x.UserName == UserName);
+                accountSettings.Users.RemoveAll(x => x.UserName == ExampleUserName);
                 accountSettings.Users.Add(user);
 
                 Console.WriteLine("Created {0} groups and {1} users in {2}.",
@@ -267,6 +268,37 @@ namespace Miracle.FileZilla.Api.Samples
 
                 fileZillaApi.SetAccountSettings(accountSettings);
                 Console.WriteLine("Finished saving account settings in {0}.", stopWatch.GetDelta());
+            }
+        }
+
+        private static void ChangeExistingUser()
+        {
+            Console.WriteLine("\n-- {0} --", MethodBase.GetCurrentMethod().Name);
+            using (IFileZillaApi fileZillaApi = new FileZillaApi(IPAddress.Parse(Ip), Port) { Log = DebugLog })
+            {
+                var stopWatch = Stopwatch2.StartNew();
+                fileZillaApi.Connect(ServerPassword);
+        
+                var accountSettings = fileZillaApi.GetAccountSettings();
+                Console.WriteLine("Account settings with {0} groups and {1} users fetched in {2}.",
+                    accountSettings.Groups.Count,
+                    accountSettings.Users.Count,
+                    stopWatch.GetDelta());
+
+                // Find user using LINQ. 
+                var existingUser = accountSettings.Users.FirstOrDefault(x => x.UserName == ExampleUserName);
+
+                // Did we find a user with the provided user name?
+                if (existingUser != null)
+                {
+                    // Modify all aspects of the user.
+                    existingUser.AssignPassword("NewPassword", fileZillaApi.ProtocolVersion);
+
+                    // Save the changed user
+                    Console.WriteLine("Save all settings including the modified user");
+                    fileZillaApi.SetAccountSettings(accountSettings);
+                    Console.WriteLine("Finished saving account settings in {0}.", stopWatch.GetDelta());
+                }
             }
         }
 
@@ -287,7 +319,7 @@ namespace Miracle.FileZilla.Api.Samples
                     accountSettings.Users.Count,
                     stopWatch.GetDelta());
 
-                accountSettings.Users.RemoveAll(x => x.UserName == UserName);
+                accountSettings.Users.RemoveAll(x => x.UserName == ExampleUserName);
 
                 fileZillaApi.SetAccountSettings(accountSettings);
                 Console.WriteLine("Finished saving account settings in {0}.", stopWatch.GetDelta());
@@ -310,14 +342,14 @@ namespace Miracle.FileZilla.Api.Samples
                     accountSettings.Users.Count,
                     stopWatch.GetDelta());
 
-                accountSettings.Groups.RemoveAll(x => x.GroupName.StartsWith(GroupName));
-                accountSettings.Users.RemoveAll(x => x.UserName.StartsWith(UserName));
+                accountSettings.Groups.RemoveAll(x => x.GroupName.StartsWith(ExampleGroupName));
+                accountSettings.Users.RemoveAll(x => x.UserName.StartsWith(ExampleUserName));
 
                 for (var i = 0; i < MaxGroups; i++)
                 {
                     var group = new Group()
                     {
-                        GroupName = GroupName + i,
+                        GroupName = ExampleGroupName + i,
                         SharedFolders = new List<SharedFolder>()
                         {
                             new SharedFolder()
@@ -336,8 +368,8 @@ namespace Miracle.FileZilla.Api.Samples
                 {
                     var user = new User
                     {
-                        GroupName = GroupName + (i % MaxGroups), // Reference to group
-                        UserName = UserName + i,
+                        GroupName = ExampleGroupName + (i % MaxGroups), // Reference to group
+                        UserName = ExampleUserName + i,
                         SharedFolders = new List<SharedFolder>()
                         {
                             new SharedFolder()
@@ -379,8 +411,8 @@ namespace Miracle.FileZilla.Api.Samples
                     accountSettings.Users.Count,
                     stopWatch.GetDelta());
 
-                accountSettings.Users.RemoveAll(x => x.UserName.StartsWith(UserName));
-                accountSettings.Groups.RemoveAll(x => x.GroupName.StartsWith(GroupName));
+                accountSettings.Users.RemoveAll(x => x.UserName.StartsWith(ExampleUserName));
+                accountSettings.Groups.RemoveAll(x => x.GroupName.StartsWith(ExampleGroupName));
 
                 fileZillaApi.SetAccountSettings(accountSettings);
                 Console.WriteLine("Finished saving account settings in {0}.", stopWatch.GetDelta());
