@@ -3,6 +3,9 @@
 Managed API for FileZilla FTP server. Allows you to do basically the same as the FileZilla Server interface.
 Target audience is everyone who wants to automate the administration of FileZilla server, particularly user/group management.
 
+# Note! FileZilla server 1.x is NOT supported
+This *not* my decision as the FileZilla team has made it almost impossible to maintain an API for the 1.x+ as the internal API will changes without notice. See [FileZilla Forums](https://forum.filezilla-project.org/viewtopic.php?f=6&t=54164&p=178144#p178147).
+
 ## Usage
 
 Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/packages/Miracle.FileZilla.Api/)
@@ -19,7 +22,10 @@ Available as a NuGet package: [Miracle.FileZilla.Api](https://www.nuget.org/pack
 
 ## FileZilla Server versions supported
 
-Simplified: 0.9.43 or later. If the API are able to connect to the FileZilla server then you are good to go!
+All 0.9.x versions from 0.9.43+. 
+
+1.x+ version is NOT supported. This not my decision as the FileZilla team has made it almost impossible to maintain an API for the 1.x+ as the internal API changes without  
+
 
 ### FileZilla Server versions tested during development
 
